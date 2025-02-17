@@ -1,0 +1,9 @@
+# librerie da installare
+numpy
+tensorflow
+matplotlib
+scikit-learn
+pydot
+seaborn
+opencv
+visualkeras
