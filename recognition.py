@@ -1,12 +1,13 @@
 # Libraries import
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.datasets import mnist
+from tensorflow import keras
+from keras import datasets, models, layers, callbacks
 import matplotlib.pyplot as plt
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Input
+#from keras.models import Sequential
+#from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Input
 import visualkeras
-from keras.callbacks import EarlyStopping
+#from tensorflow.keras.callbacks import EarlyStopping
 
 
 """The filters in the first few layers are usually less abstract and typically emulates edge detectors, blob detectors etc. You generally don't want too many filters applied to the input layer as there is only so much information extractable from the raw input layer. Most of the filters will be redundant if you add too many. You can check this by pruning (decrease number of filters until your performance metrics degrade)
@@ -15,7 +16,7 @@ The kernel size determines how much of the image you want affecting the output o
 
 The Inception Architecture takes these decisions out of the hand of the modeller as it lumps filters of different kernel size together and let the model learn the best ones to use."""
 
-(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+(train_images, train_labels), (test_images, test_labels) = datasets.mnist.load_data()
 
 # stampa shape training images
 print(train_images.shape)
@@ -34,15 +35,15 @@ train_images= train_images/255
 test_images=test_images/255
 
 #definisco CNN
-model = Sequential([
-    Input(shape=(28,28,1)),
-    Conv2D(16, (3, 3), activation='relu'),
-    MaxPooling2D((2, 2)),
-    Conv2D(16, (3, 3), activation='relu'),
-    MaxPooling2D((2,2)),
-    Flatten(),
-    Dense(64, activation='relu'),
-    Dense(10, activation='softmax')
+model = models.Sequential([
+    layers.Input(shape=(28,28,1)),
+    layers.Conv2D(16, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(16, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2,2)),
+    layers.Flatten(),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(10, activation='softmax')
 ])
 model.summary()
 
@@ -54,7 +55,7 @@ model.compile(
 )
 
 # Fermo il training quando il validation loss raggiunge una soglia accettabile
-early_stopping = EarlyStopping(monitor='val_loss', min_delta=0.01, patience=5, verbose=1, mode='min')
+early_stopping = callbacks.EarlyStopping(monitor='val_loss', min_delta=0.01, patience=5, verbose=1, mode='min')
 
 # Model training
 #history = model.fit(train_images, train_labels, epochs=15, validation_data=(test_images, test_labels))
