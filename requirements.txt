@@ -5,4 +5,5 @@ matplotlib
 scikit-learn
 pydot
 seaborn
-*opencv*
+opencv
+visualkeras
