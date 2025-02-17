@@ -1,6 +1,5 @@
 import random
 import sys
-
 import numpy as np
 import pygame
 
@@ -60,6 +59,10 @@ def aggiorna_matrice(matrix, movimento):
 
     return matrix
 
+def inverti_mossa(mossa):
+    """Inverte la mossa scambiando la sorgente con la destinazione"""
+    return (mossa[1], mossa[0])  # Scambia la colonna di partenza con quella di destinazione
+
 def anima_matrice(matrix1, matrix2, movimenti):
     color_map = assign_colors()
     pygame.init()
@@ -72,38 +75,38 @@ def anima_matrice(matrix1, matrix2, movimenti):
     height = size * block_size + 2 * padding
 
     screen = pygame.display.set_mode((width, height))
-    pygame.display.set_caption("Matrix Visualizer")
+    pygame.display.set_caption("Block World")
 
     clock = pygame.time.Clock()
 
+    move_index = 0  # Tiene traccia della mossa corrente
     running = True
-    for movimento in movimenti:
-        matrix1 = aggiorna_matrice(matrix1, movimento)
 
+    while running:
         screen.fill((0, 0, 0))
         draw_matrix(screen, matrix1, color_map, padding, padding, block_size)
         draw_matrix(screen, matrix2, color_map, padding + size * block_size + padding, padding, block_size)
-
         pygame.display.flip()
-        pygame.time.delay(500)  # Mostra l'aggiornamento per 500ms
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RIGHT and move_index < len(movimenti):
+                    # Avanza alla prossima mossa
+                    matrix1 = aggiorna_matrice(matrix1, movimenti[move_index])
+                    move_index += 1
+                elif event.key == pygame.K_LEFT and move_index > 0:
+                    # Torna alla mossa precedente eseguendo la mossa inversa
+                    move_index -= 1
+                    matrix1 = aggiorna_matrice(matrix1, inverti_mossa(movimenti[move_index]))
 
         clock.tick(30)
 
-    # **Forziamo un ultimo aggiornamento per mostrare l'ultima mossa**
-    screen.fill((0, 0, 0))
-    draw_matrix(screen, matrix1, color_map, padding, padding, block_size)
-    draw_matrix(screen, matrix2, color_map, padding + size * block_size + padding, padding, block_size)
-
-    pygame.display.flip()
-    pygame.time.delay(500)  # Mostra l'ultimo aggiornamento
-
-    pygame.time.delay(5000)  # Aspetta 5 secondi prima di chiudere
     pygame.quit()
     sys.exit()
+
+
 
 
 if __name__ == "__main__":
