@@ -9,7 +9,11 @@ import visualkeras
 from keras.callbacks import EarlyStopping
 
 
+"""The filters in the first few layers are usually less abstract and typically emulates edge detectors, blob detectors etc. You generally don't want too many filters applied to the input layer as there is only so much information extractable from the raw input layer. Most of the filters will be redundant if you add too many. You can check this by pruning (decrease number of filters until your performance metrics degrade)
 
+The kernel size determines how much of the image you want affecting the output of your convolution (the 'receptive field' of the kernel). It's been seen smaller kernels are generally better than larger ones (i.e go with 3x3 instead of 5x5, 7x7).
+
+The Inception Architecture takes these decisions out of the hand of the modeller as it lumps filters of different kernel size together and let the model learn the best ones to use."""
 
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 
@@ -80,3 +84,5 @@ plt.legend(loc='upper right')
 
 plt.tight_layout()
 plt.show()
+
+model.save("recognition_numbers.keras")
