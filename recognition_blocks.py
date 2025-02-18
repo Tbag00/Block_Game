@@ -23,7 +23,7 @@ def recon_number(rectangle: cv.Mat) -> int:
 
 # importo modello e immagine
 model: models.Sequential = models.load_model("recognition_numbers.keras")
-img = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/noflash.jpeg', cv.IMREAD_GRAYSCALE)
+img = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/print3.jpeg', cv.IMREAD_GRAYSCALE)
 #img = cv.resize(img, (1024, 512))
 assert img is not None, "file could not be read, check with os.path.exists()"
 larghezza_img = img.shape[1]
@@ -40,8 +40,8 @@ img=clahe.apply(img)
 blurred = cv.GaussianBlur(img, (21, 21), 0)
 img = cv.absdiff(img, blurred)
 img = cv.normalize(img, None, 0, 255, cv.NORM_MINMAX)"""
-kernel = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
-img = cv.morphologyEx(img, cv.MORPH_CLOSE, kernel, iterations=2)
+#kernel = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
+#img = cv.morphologyEx(img, cv.MORPH_CLOSE, kernel, iterations=2)
 img = cv.normalize(
     img, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
 (thresh, img) = cv.threshold(img, 128, 255, cv.THRESH_BINARY | cv.ADAPTIVE_THRESH_GAUSSIAN_C)
