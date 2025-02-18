@@ -7,6 +7,7 @@ from aima import depth_first_graph_search, breadth_first_graph_search, iterative
 from collections.abc import Callable
 import time
 from dataclasses import dataclass
+from puppolo import anima_matrice
 """HA SEGNATO L'INTER"""
 BLUE = "\033[34;1m"
 RED = "\033[31;1m"
@@ -23,7 +24,7 @@ def apply_gravity(matrix):
 
 
 def generate_matrix():
-    num_elements = 2 # Numero casuale di elementi unici tra 1 e 6
+    num_elements = 6 # Numero casuale di elementi unici tra 1 e 6
     numbers = random.sample(range(1, num_elements+1), num_elements)  # Genera numeri unici
     
     matrix = np.zeros((num_elements, num_elements), dtype=int)  # Crea una matrice quadrata di zeri
@@ -130,6 +131,7 @@ def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs) -
         print(f"{GREEN}Path Cost:{RESET} {sol.path_cost}")
         print(f"{GREEN}Path Length:{RESET} {sol.depth}")
     print(f"{GREEN}Time:{RESET} {end - start} s")
+    anima_matrice(problem.initial.m_corrente, problem.goal, sol.solution())
 
 
 class Matrice:

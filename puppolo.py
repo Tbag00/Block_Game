@@ -119,5 +119,3 @@ if __name__ == "__main__":
 
     anima_matrice(matrix1, matrix2, movimenti)
 
-
-
