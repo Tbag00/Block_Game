@@ -1,17 +1,22 @@
 from collections.abc import Callable
 from collections import deque
+from typing import List, Tuple
 import numpy as np
 import random
-from aima import Problem, Node, memoize, PriorityQueue,GraphProblem
-from aima import depth_first_graph_search, breadth_first_graph_search, iterative_deepening_search, depth_limited_search,astar_search
+from aima import Problem, Node, memoize, PriorityQueue, GraphProblem
+from aima import depth_first_graph_search, breadth_first_graph_search, iterative_deepening_search, \
+     depth_limited_search, astar_search
 from collections.abc import Callable
 import time
 from dataclasses import dataclass
+
 """HA SEGNATO L'INTER"""
 BLUE = "\033[34;1m"
 RED = "\033[31;1m"
 GREEN = "\033[32;1m"
 RESET = "\033[0m"
+
+
 def apply_gravity(matrix):
     """Simula la gravità facendo cadere i numeri verso il basso."""
     rows, cols = matrix.shape
@@ -23,41 +28,41 @@ def apply_gravity(matrix):
 
 
 def generate_matrix():
-    num_elements = 2 # Numero casuale di elementi unici tra 1 e 6
-    numbers = random.sample(range(1, num_elements+1), num_elements)  # Genera numeri unici
-    
+    num_elements = 6  # Numero casuale di elementi unici tra 1 e 6
+    numbers = random.sample(range(1, num_elements + 1), num_elements)  # Genera numeri unici
+
     matrix = np.zeros((num_elements, num_elements), dtype=int)  # Crea una matrice quadrata di zeri
-    
+
     positions = random.sample(range(num_elements * num_elements), num_elements)  # Seleziona posizioni casuali
     for pos, num in zip(positions, numbers):
         row, col = divmod(pos, num_elements)
         matrix[row][col] = num  # Inserisce un numero unico tra 1 e 6
-    
+
     return apply_gravity(matrix)
 
 
 matrix_i = generate_matrix()
 matrix_f = generate_matrix()
 
-print(matrix_i) #16 a 9
+print(matrix_i)  #16 a 9
 print(matrix_f)
 
-colonne = matrix_i.shape[1]
 
-def prova(state:np.ndarray)->list[int]:
-        colonne = state.shape[1]
-        righe = state.shape[0]
-        print(righe)
-        azioni_possibili = []
-        for i in range(colonne):
-            if state[righe-1][i] != 0:
-                for j in range(colonne):
-                    if i != j:
-                        if state[0][j] == 0:
-                            azioni_possibili.append((i,j))
-                           # azioni_possibili.append(j)
+def prova(state: np.ndarray) -> list[tuple[int, int]]:
+    colonne = state.shape[1]
+    righe = state.shape[0]
+    print(righe)
+    azioni_possibili = []
+    for i in range(colonne):
+        if state[righe - 1][i] != 0:
+            for j in range(colonne):
+                if i != j:
+                    if state[0][j] == 0:
+                        azioni_possibili.append((i, j))
+                    # azioni_possibili.append(j)
+    return azioni_possibili
 
-        return azioni_possibili
+
 pisello = prova(matrix_i)
 print(pisello)
 
@@ -74,14 +79,17 @@ print(pisello)
 matrix_i = nata_prova(matrix_i)
 print(matrix_i)
 '''
+
+
 @dataclass  #decoratore
 class Result:
     result: Node
     nodes_generated: int
     paths_explored: int
     nodes_left_in_frontier: int
-def breadth_first_graph_search1(problem: Problem, f: Callable) -> Result:
 
+
+def breadth_first_graph_search1(problem: Problem, f: Callable) -> Result:
     print(pisello)
     f = memoize(f, 'f')
     node = Node(problem.initial)
@@ -92,9 +100,9 @@ def breadth_first_graph_search1(problem: Problem, f: Callable) -> Result:
     while frontier:
         node = frontier.pop()
 
-       # print(f"Exploring: \n{node.state.m_corrente}")  # Add this to see the states being explored
+        # print(f"Exploring: \n{node.state.m_corrente}")  # Add this to see the states being explored
         #culo = np.array_equal(node.state.m_corrente,node.state.goal)
-       # print(culo)
+        # print(culo)
 
         if problem.goal_test(node.state):
             #print(node, counter, len(explored), len(frontier))
@@ -109,7 +117,6 @@ def breadth_first_graph_search1(problem: Problem, f: Callable) -> Result:
                     del frontier[child]
                     frontier.append(child)
     return Result(None, counter, len(explored), 0)
-
 
 
 def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs) -> None:
@@ -133,66 +140,61 @@ def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs) -
 
 
 class Matrice:
-        def __lt__(self, other):
-            return np.sum(self.m_corrente) < np.sum(other.m_corrente)
+    def __lt__(self, other):
+        return np.sum(self.m_corrente) < np.sum(other.m_corrente)
 
-        def __init__(self,m_corrente:np.ndarray):
-            self.m_corrente = m_corrente
-        #eq serve a poter effettivamente confrontare due oggetti altrimenti python controlla che siano lo stesso oggetto con lo stesso indirizzo di memoria
-        def __eq__(self, altra_m):
-            if isinstance(altra_m, Matrice):
-                return np.array_equal(self.m_corrente, altra_m.m_corrente)
-            return False
-            #hash invece mi da un valore numerico(int) che permette appunto identificare gli oggetti e in caso
-            #di confronti appunto compara l'hash
-        def __hash__(self):
-              return hash(self.m_corrente.tobytes())
-            
+    def __init__(self, m_corrente: np.ndarray):
+        self.m_corrente = m_corrente
+
+    #eq serve a poter effettivamente confrontare due oggetti altrimenti python controlla che siano lo stesso oggetto con lo stesso indirizzo di memoria
+    def __eq__(self, altra_m):
+        if isinstance(altra_m, Matrice):
+            return np.array_equal(self.m_corrente, altra_m.m_corrente)
+        return False
+        #hash invece mi da un valore numerico(int) che permette appunto identificare gli oggetti e in caso
+        #di confronti appunto compara l'hash
+
+    def __hash__(self):
+        return hash(self.m_corrente.tobytes())
+
 
 class Mproblem(Problem):
-    def __init__(self,initial:Matrice, goal:Matrice)-> None:
+    def __init__(self, initial: Matrice, goal: Matrice) -> None:
 
         super().__init__(initial, goal)
-        
-    def actions(self, state:Matrice)-> list[tuple[int,int]]:
+
+    def actions(self, state: Matrice) -> list[tuple[int, int]]:
         colonne = state.m_corrente.shape[1]
-        righe = state.m_corrente.shape[0]-1
+        righe = state.m_corrente.shape[0] - 1
         azioni_possibili = []
         for i in range(colonne):
             if state.m_corrente[righe][i] != 0:
                 for j in range(colonne):
                     if i != j:
                         if state.m_corrente[0][j] == 0:
-                            azioni_possibili.append((i,j))                
-        
-     
-
+                            azioni_possibili.append((i, j))
         return azioni_possibili
-    
-    def result(self, state:Matrice, action:tuple[int,int])->Matrice:
-        new_matrice = np.copy(state.m_corrente) 
-        righe_p = 0 #righe di partenza 
-        righe_a = new_matrice.shape[0]-1 #righe di arrivo per le colonne di arrivo
+
+    def result(self, state: Matrice, action: tuple[int, int]) -> Matrice:
+        new_matrice = np.copy(state.m_corrente)
+        righe_p = 0  #righe di partenza
+        righe_a = new_matrice.shape[0] - 1  #righe di arrivo per le colonne di arrivo
         while new_matrice[righe_p][action[0]] == 0:
             righe_p += 1
         while new_matrice[righe_a][action[1]] != 0:
             righe_a -= 1
         if righe_a >= 0:
-            new_matrice[righe_a][action[1]] = new_matrice[righe_p][action[0]]#modificare gli indici di action se da problemi perchè potrebbe volere un numero al posto di una tupla vedi sopra
+            new_matrice[righe_a][action[1]] = new_matrice[righe_p][action[0]]  #modificare gli indici di action se da problemi perchè potrebbe volere un numero al posto di una tupla vedi sopra
             new_matrice[righe_p][action[0]] = 0
         return Matrice(new_matrice)
-    
 
-    def goal_test(self, state:Matrice) -> bool:
-        #culo = np.array_equal(state.m_corrente,self.goal)
-        #print(self.goal)
-        return np.array_equal(state.m_corrente,self.goal)
-    
+    def goal_test(self, state: Matrice) -> bool:
+        return np.array_equal(state.m_corrente, self.goal)
 
-    def posti_sburrati(problem,node)-> int:
+    def relaxed_problem(problem, node) -> int:
         return np.sum(node.state.m_corrente != problem.goal)
-    
-    def posti_cacati(problem, node) -> int:
+
+    def weighted_relax(problem, node) -> int:
         stato_corrente = node.state.m_corrente
         goal = problem.goal
         rows, cols = stato_corrente.shape
@@ -203,20 +205,23 @@ class Mproblem(Problem):
             for c in range(cols):
                 valore = stato_corrente[r, c]
                 goal_valore = goal[r, c]
-
-                if valore != goal_valore:
-                    # Il blocco è nella posizione sbagliata
+                if valore != goal_valore:  # se il valore è sbagliato il numero di azioni per metterlo al posto giusto dipendera dai blocchi sopra
                     errore_totale += 1
+                    for r_sopra in range(r - 1, rows):  # controlliamo sopra
+                        if stato_corrente[r_sopra][c] != 0:
+                            errore_totale += 1
+                        else:
+                            break
                 else:
                     # Il blocco è nella posizione giusta, ma ha sotto elementi sbagliati?
                     for r_sotto in range(r + 1, rows):  # Controlliamo sotto
                         if stato_corrente[r_sotto, c] != goal[r_sotto, c]:
-                            errore_totale += 1
+                            errore_totale += rows - r_sotto
                             break  # Basta un errore sotto per contare il blocco come problematico
 
         return errore_totale
-    
-    def posti_pisciati(problem,node)->int:
+
+    def subgoal_problem(problem, node) -> int:
         """
         Euristica che assegna priorità alle colonne più a sinistra.
         Penalizza gli elementi fuori posto con pesi decrescenti per colonne successive.
@@ -224,7 +229,7 @@ class Mproblem(Problem):
         goal_matrix = problem.goal
         current_matrix = node.state.m_corrente
         rows, cols = current_matrix.shape
-        score = 0  
+        score = 0
 
         for col in range(cols):
             col_weight = (cols - col)  # Peso più alto per le prime colonne
@@ -234,12 +239,56 @@ class Mproblem(Problem):
 
         return score
 
+    def heavy_weighted_subgoal(problem, node) -> int:
+        goal_matrix = problem.goal
+        stato_corrente = node.state.m_corrente
+        rows, cols = stato_corrente.shape
+        score = 0
 
+        for c in range(cols):
+            col_weight = (cols - c)  # Peso più alto per le prime colonne
+            for r in range(rows - 1, -1, -1):  # Dal basso verso l'alto
+                if stato_corrente[r][c] != goal_matrix[r][c]:
+                    peso = 1
+                    for r_sopra in range(r - 1, rows):  # controlliamo sopra
+                        if stato_corrente[r_sopra][c] != 0:
+                            peso += 1
+                        else:
+                            score += col_weight * peso  # Penalità ponderata per colonna
+                            break
+                else:
+                    # Il blocco è nella posizione giusta, ma ha sotto elementi sbagliati?
+                    for r_sotto in range(r + 1, rows):  # Controlliamo sotto
+                        if stato_corrente[r_sotto, c] != goal_matrix[r_sotto, c]:
+                            score += (rows - r_sotto) * col_weight
+                            break  # Basta un errore sotto per contare il blocco come problematico
 
-    def distanza_manhattan(problem, node) -> int:
+        return score
+
+    def weighted_subgoal(problem, node) -> int:
+        goal_matrix = problem.goal
+        stato_corrente = node.state.m_corrente
+        rows, cols = stato_corrente.shape
+        score = 0
+
+        for c in range(cols):
+            col_weight = (cols - c)  # Peso più alto per le prime colonne
+            for r in range(rows - 1, -1, -1):  # Dal basso verso l'alto
+                if stato_corrente[r][c] != goal_matrix[r][c]:
+                    score += col_weight  # Penalità ponderata per colonna
+                else:
+                    # Il blocco è nella posizione giusta, ma ha sotto elementi sbagliati?
+                    for r_sotto in range(r + 1, rows):  # Controlliamo sotto
+                        if stato_corrente[r_sotto, c] != goal_matrix[r_sotto, c]:
+                            score += 1
+                            break  # Basta un errore sotto per contare il blocco come problematico
+
+        return score
+
+    def manhattan_distance(problem, node) -> int:
         stato_corrente = node.state.m_corrente
         goal = problem.goal
-        
+
         # Creiamo una mappa delle posizioni dei valori nel goal
         goal_positions = {goal[r, c]: (r, c) for r in range(goal.shape[0]) for c in range(goal.shape[1])}
 
@@ -252,32 +301,10 @@ class Mproblem(Problem):
                     distanza += abs(gr - r) + abs(gc - c)  # Distanza di Manhattan
 
         return distanza
-    
-    
 
-    
-    
 
 matrice_inizio = Matrice(matrix_i)
-
 problemazione = Mproblem(matrice_inizio, matrix_f)
+execute("A-Star euristica subgoal pesata", astar_search, problemazione, problemazione.weighted_subgoal)
+execute("A-Star euristica subgoal pesata++", astar_search, problemazione, problemazione.heavy_weighted_subgoal)
 
-
-'''azione_test = azioni[0]  # Prendiamo una delle azioni disponibili
-print(f"Testando azione: {azione_test}")
-
-nuovo_stato = bfs_prob.result(stato1, azione_test)
-print("Nuovo stato dopo l'azione:")
-print(nuovo_stato.m_corrente)
-'''
-
-#execute("BFS HA SEGNATO L'INTER",breadth_first_graph_search1,problemazione, lambda node: 0)
-#execute("A-Star euristica sburrata",astar_search, problemazione, problemazione.posti_sburrati)
-#execute("A-Star euristica cacata",astar_search, problemazione, problemazione.posti_cacati)
-#execute("A-Star euristica manhattan",astar_search, problemazione, problemazione.distanza_manhattan)
-#execute("A-Star euristica manhattan",astar_search, problemazione, problemazione.distanza_manhattan2)
-execute("A-Star euristica pisciata",astar_search, problemazione, problemazione.posti_pisciati)
-
-
-#execute("A-Star euristica sburrata",astar_search, problemazione, problemazione.posti_sburrati)
-#execute("A-Star",astar_search, problemazione, lambda node: 0)
