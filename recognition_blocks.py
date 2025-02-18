@@ -23,7 +23,7 @@ def recon_number(rectangle: cv.Mat) -> int:
 
 # importo modello e immagine
 model: models.Sequential = models.load_model("recognition_numbers.keras")
-img = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/print3.jpeg', cv.IMREAD_GRAYSCALE)
+img = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/ombroso.jpeg', cv.IMREAD_GRAYSCALE)
 #img = cv.resize(img, (1024, 512))
 assert img is not None, "file could not be read, check with os.path.exists()"
 larghezza_img = img.shape[1]
