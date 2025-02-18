@@ -5,7 +5,7 @@ from keras import datasets, models, layers, callbacks
 import matplotlib.pyplot as plt
 import cv2 as cv
 
-img = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/5.jpeg', cv.IMREAD_GRAYSCALE)
+img = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/4.jpeg', cv.IMREAD_GRAYSCALE)
 
 assert img is not None, "file could not be read, check with os.path.exists()"
 
@@ -13,15 +13,39 @@ assert img is not None, "file could not be read, check with os.path.exists()"
 img = cv.normalize(
     img, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
 (thresh, img) = cv.threshold(img, 128, 255, cv.THRESH_BINARY | cv.ADAPTIVE_THRESH_GAUSSIAN_C)
+#(thresh, img) = cv.threshold(img, 128, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)
 
+# gaussiana inverte i colori quindi li inverto
+img = cv.bitwise_not(img)
 contours, hierarchy = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-contours = contours[0].reshape(-1,2)
+# contours = contours[0].reshape(-1,2)
+cnt = contours[0]
+"""
+rect = cv.minAreaRect(cnt)
+box = cv.boxPoints(rect)
+box = np.int64(box)
+cv.drawContours(img,[box],0,(255,0,255),2)
+"""
+rectangles = []
+for contour in contours:
+    epsilon = 0.1*cv.arcLength(contour,True)
+    approx = cv.approxPolyDP(contour,epsilon,True)
+    x,y,w,h = cv.boundingRect(approx)
 
+    if w > img.shape[1]/16.0 and h > img.shape[0]/16.0:
+        rectangles.append(cv.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2))
+
+for rect in rectangles:
+    cv.imshow('ret', rect)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
+    
+"""
 img1 = img.copy()
 
-for (x, y) in contours:
-    cv.circle(img1, (x, y), 1, (255, 0, 0), 3)
+for contour in contours:
+    approx = cv.approxPolyDP(contour, 0.02*cv.arcLength(contour, True), True)
+    x, y, w, h = cv.boundingRect(approx)
 
-cv.imshow('Output', img1)
-cv.waitKey(0)
-cv.destroyAllWindows()
+cv.circle(img, (x, y), 1, (255, 0, 0), 3)
+"""

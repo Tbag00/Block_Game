@@ -9,17 +9,17 @@ import cv2
 cv2.ocl.setUseOpenCL(False)
 model: models.Sequential = models.load_model("recognition_numbers.keras")
 
-img = cv2.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_numeri/1.jpeg', cv2.IMREAD_GRAYSCALE)
+img = cv2.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_numeri/2.jpeg', cv2.IMREAD_GRAYSCALE)
 
 assert img is not None, "file could not be read, check with os.path.exists()"
-# inverto colori perché dataset ha colori invertiti
-img = cv2.bitwise_not(img)
+# colori da invertire se uso OTSU inverto colori perché dataset ha colori invertiti
+#img = cv2.bitwise_not(img)
 
 # miglioro contrasto
 img = cv2.normalize(
     img, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
-# (thresh, img) = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY | cv2.ADAPTIVE_THRESH_GAUSSIAN_C) # da' immagini invertite
-(thresh, img) = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+(thresh, img) = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY | cv2.ADAPTIVE_THRESH_GAUSSIAN_C) # da' immagini invertite
+#(thresh, img) = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
 # adatto input size
 img = cv2.resize(img,(28,28))
