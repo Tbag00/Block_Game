@@ -23,8 +23,11 @@ def recon_number(rectangle: cv.Mat) -> int:
 
 # importo modello e immagine
 model: models.Sequential = models.load_model("recognition_numbers.keras")
-img = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/prova.jpeg', cv.IMREAD_GRAYSCALE)
-#img = cv.resize(img, (1024, 512))
+img = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/test.jpeg', cv.IMREAD_GRAYSCALE)
+img = cv.resize(img, (1024, 512))
+print(img.shape)
+larghezza_img = img.shape[1]
+altezza_img = img.shape[0]
 
 assert img is not None, "file could not be read, check with os.path.exists()"
 
@@ -45,18 +48,24 @@ rects = []
 contours, hierarchy = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
 for contour in contours:
-    # approssimo rettangolo
-    epsilon = 0.1*cv.arcLength(contour,True)
-    approx = cv.approxPolyDP(contour,epsilon,True)
-    x,y,w,h = cv.boundingRect(approx)
+    x,y,w,h = cv.boundingRect(contour)
     ratio = w/float(h)
 
-    # salvo rettangoli superiori a una certa grandezza
-    #if w > img.shape[1]/16.0 and h > img.shape[0]/16.0 and x != 0:
-    if w*h > 3000:
-        rects.append({
-            "x":x, "y":y, "w":w, "h":h
-        })
+    # controllo se la forma e' rettangolare
+    if 0.8 < ratio < 2.0:
+        # approssimo rettangolo
+        epsilon = 0.14*cv.arcLength(contour,True)
+        approx = cv.approxPolyDP(contour,epsilon,True)
+
+        # controllo che contour sia rettangolo
+        if len(approx) == 4:
+            x,y,w,h = cv.boundingRect(approx)
+
+            # salvo rettangoli con dimensioni limitate
+            if w > (larghezza_img / 12) and h > (altezza_img / 12) and w < (larghezza_img / 4) and h < (altezza_img / 4):
+                rects.append({
+                    "x":x, "y":y, "w":w, "h":h
+                })
 
 for rect in rects:
     rectangle = cv.rectangle(img,(rect["x"],rect["y"]),(rect["x"]+rect["w"],rect["y"]+rect["h"]),(0,255,0),2)
@@ -65,13 +74,3 @@ for rect in rects:
     cv.waitKey(0)
 
 cv.destroyAllWindows()
-"""
-img1 = img.copy()
-
-for contour in contours:
-    approx = cv.approxPolyDP(contour, 0.02*cv.arcLength(contour, True), True)
-    x, y, w, h = cv.boundingRect(approx)
-
-cv.circle(img, (x, y), 1, (255, 0, 0), 3)
-"""
-
