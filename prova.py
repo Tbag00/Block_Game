@@ -122,7 +122,7 @@ def breadth_first_graph_search1(problem: Problem, f: Callable) -> Result:
 
 def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs) -> None:
     print(f"{RED}{name}{RESET}\n")
-    #uso perf_counter per contare "meglio" il tempo hardware al massimo
+#   uso perf_counter per contare "meglio" il tempo hardware al massimo
     start = time.perf_counter()
     sol = algorithm(problem, *args, **kwargs)
     end = time.perf_counter()
