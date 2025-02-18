@@ -90,36 +90,6 @@ class Result:
     nodes_left_in_frontier: int
 
 
-def breadth_first_graph_search1(problem: Problem, f: Callable) -> Result:
-    print(pisello)
-    f = memoize(f, 'f')
-    node = Node(problem.initial)
-    frontier = PriorityQueue('min', f)
-    frontier.append(node)
-    explored = set()
-    counter = 1
-    while frontier:
-        node = frontier.pop()
-
-        # print(f"Exploring: \n{node.state.m_corrente}")  # Add this to see the states being explored
-        #culo = np.array_equal(node.state.m_corrente,node.state.goal)
-        # print(culo)
-
-        if problem.goal_test(node.state):
-            #print(node, counter, len(explored), len(frontier))
-            return Result(node, counter, len(explored), len(frontier))
-        explored.add(node.state)
-        for child in node.expand(problem):
-            counter += 1
-            if child.state not in explored and child not in frontier:
-                frontier.append(child)
-            elif child in frontier:
-                if f(child) < frontier[child]:
-                    del frontier[child]
-                    frontier.append(child)
-    return Result(None, counter, len(explored), 0)
-
-
 def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs) -> None:
     print(f"{RED}{name}{RESET}\n")
 #   uso perf_counter per contare "meglio" il tempo hardware al massimo
@@ -138,7 +108,7 @@ def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs) -
         print(f"{GREEN}Path Cost:{RESET} {sol.path_cost}")
         print(f"{GREEN}Path Length:{RESET} {sol.depth}")
     print(f"{GREEN}Time:{RESET} {end - start} s")
-    anima_matrice(problem.initial.m_corrente, problem.goal, sol.solution())
+    #anima_matrice(problem.initial.m_corrente, problem.goal, sol.solution())
 
 
 class Matrice:
@@ -239,6 +209,7 @@ class Mproblem(Problem):
                 if current_matrix[row][col] != goal_matrix[row][col]:
                     score += col_weight  # Penalità ponderata per colonna
 
+
         return score
 
     def heavy_weighted_subgoal(problem, node) -> int:
@@ -307,6 +278,5 @@ class Mproblem(Problem):
 
 matrice_inizio = Matrice(matrix_i)
 problemazione = Mproblem(matrice_inizio, matrix_f)
+execute("A-Star euristica subgoal", astar_search, problemazione, problemazione.subgoal_problem)
 execute("A-Star euristica subgoal pesata", astar_search, problemazione, problemazione.weighted_subgoal)
-#execute("A-Star euristica subgoal pesata++", astar_search, problemazione, problemazione.heavy_weighted_subgoal)
-

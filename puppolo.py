@@ -39,6 +39,7 @@ def draw_matrix(surface, matrix, color_map, start_x, start_y, block_size):
                 text_rect = text.get_rect(center=(x + block_size // 2, y + block_size // 2))
                 surface.blit(text, text_rect)
 
+
 def aggiorna_matrice(matrix, movimento):
     colonna_sorgente, colonna_destinazione = movimento
 
@@ -59,9 +60,11 @@ def aggiorna_matrice(matrix, movimento):
 
     return matrix
 
+
 def inverti_mossa(mossa):
     """Inverte la mossa scambiando la sorgente con la destinazione"""
     return (mossa[1], mossa[0])  # Scambia la colonna di partenza con quella di destinazione
+
 
 def anima_matrice(matrix1, matrix2, movimenti):
     color_map = assign_colors()
@@ -107,15 +110,15 @@ def anima_matrice(matrix1, matrix2, movimenti):
     sys.exit()
 
 
-
-
 if __name__ == "__main__":
-    size = 6#np.random.randint(2, 7)
-    matrix1 = generate_unique_matrix(size)
-    matrix2 = generate_unique_matrix(size)
+    size = 6  #np.random.randint(2, 7)
+    matrix1 = np.array([[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 6, 0],
+               [2, 5, 0, 0, 3, 4]])
+    matrix2 = np.array([[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 6, 0, 0, 5],
+               [3, 2, 4, 0, 0, 1]])
 
     # Esegui dei movimenti sulla matrice1
-    movimenti = [(1, 0), (0, 1), (1, 0), (0, 1), (1, 0), (0, 1)]  # Esempio di movimenti: (colonna_sorgente, colonna_destinazione)
+    movimenti = [(1, 2), (4, 2), (1, 5), (0, 1), (4, 0), (5, 4), (5, 3), (2, 5), (4, 5), (2, 5), (3, 2), (5, 4), (5, 4),
+                 (5, 2), (4, 3), (4, 5), (3, 5)]  # Esempio di movimenti: (colonna_sorgente, colonna_destinazione)
 
     anima_matrice(matrix1, matrix2, movimenti)
-
