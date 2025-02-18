@@ -49,3 +49,20 @@ print(train_images[0])
 print(model.predict(np.array([train_images[0]])))
 plt.imshow(train_images[0])
 plt.show()
+#guarda roi è la parte importante
+'''import cv2
+import pytesseract
+
+# Carica l'immagine in scala di grigi
+img = cv2.imread("immagine.png", cv2.IMREAD_GRAYSCALE)
+
+# Trova i contorni
+contours, _ = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+for cnt in contours:
+    x, y, w, h = cv2.boundingRect(cnt)  # Bounding box del rettangolo
+    roi = img[y:y+h, x:x+w]  # Estrazione dell'area interna
+
+    # OCR per leggere il numero dentro il rettangolo
+    numero = pytesseract.image_to_string(roi, config='--psm 6')
+    print(f"Numero trovato: {numero.strip()}")'''
