@@ -7,18 +7,28 @@ import matplotlib.pyplot as plt
 import cv2 as cv
 
 # controlla se rettangolo 1 contiene rettangolo 2
-def inside(x1, y1, w1, h1, x2, y2, w2, h2) -> bool:
-    if x2 >= x1 and y2 >= y1 and x2+w2 <= x1+w1 and y2+h2 <= y1+h1:
-        return True
+def inside(rectExt: dict, rectInt: dict) -> bool:
+    if rectInt["x"] >= rectExt["x"] and rectInt["y"] >= rectExt["y"]:
+        if rectInt["x"]+rectInt["w"] <= rectExt["x"]+ rectExt["w"]:
+            if rectInt["y"]+rectInt["h"] <= rectExt["y"]+rectExt["h"]:
+                return True
     else: 
         return False
 
 # Input: immagine contenente solo numero
 # Output: etichetta
-def recon_number(rectangle: cv.Mat) -> int:
+def recon_number(rect: cv.Mat) -> int:
     # adatto input size
-    rectangle = cv.resize(rectangle,(28,28))
-    return model.predict(np.array([rectangle])).argmax(axis=1)
+    rect = cv.bitwise_not(rect)
+    rect = cv.resize(rect,(28,28))
+    plt.imshow(rect)
+    plt.show()
+    predictions = model.predict(np.array([rect]))#.argmax(axis=1)
+    print(predictions)
+    predictions[:, 7:] = -np.inf
+    predictions[:, 0] = -np.inf
+    print(predictions)
+    return predictions.argmax(axis=1)
 
 
 # importo modello e immagine
@@ -74,11 +84,20 @@ for contour in contours:
                     "x":x, "y":y, "w":w, "h":h, "value":0
                 })
 
+# ordino i rettangoli da sinistra a destra
 rects = sorted(rects, key= lambda r:r["x"])
-for rect in rects:
-    rectangle = cv.rectangle(img,(rect["x"],rect["y"]),(rect["x"]+rect["w"],rect["y"]+rect["h"]),(0,255,0),2)
-    print(rect["w"]*rect["h"])
-    cv.imshow("test", img)
-    cv.waitKey(0)
 
+# escludo rettangoli esterni
+for rectExt in rects:
+    for rectInt in rects:
+        if inside(rectExt, rectInt):
+            print("removed triangle: %s" %rectExt["x"])
+            rects.remove(rectExt)
+
+for rect in rects:
+    rect_img = img[rect["y"]+10:rect["y"]+rect["h"]-10, rect["x"]+10:rect["x"]+rect["w"]-10]
+    #cv.imshow("numero", rect_img)
+    #cv.waitKey(0)
+    rect["value"] = recon_number(rect_img)
+    print(rect["value"])
 cv.destroyAllWindows()

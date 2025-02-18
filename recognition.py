@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import visualkeras
 #from tensorflow.keras.callbacks import EarlyStopping
 
+# inserire immagini dei numeri accettati da mnist
 
 """The filters in the first few layers are usually less abstract and typically emulates edge detectors, blob detectors etc. You generally don't want too many filters applied to the input layer as there is only so much information extractable from the raw input layer. Most of the filters will be redundant if you add too many. You can check this by pruning (decrease number of filters until your performance metrics degrade)
 
@@ -42,7 +43,7 @@ model = models.Sequential([
     layers.Conv2D(16, (3, 3), activation='relu'),
     layers.MaxPooling2D((2,2)),
     layers.Flatten(),
-    layers.Dense(64, activation='relu'),
+    #layers.Dense(64, activation='relu'),
     layers.Dense(10, activation='softmax')
 ])
 model.summary()
@@ -87,4 +88,4 @@ plt.tight_layout()
 plt.show()
 plt.savefig('accuracy.png')
 
-model.save("recognition_numbers.keras")
+model.save("recognition_numbers.keras", overwrite= True)
