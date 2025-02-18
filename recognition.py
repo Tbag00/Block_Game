@@ -55,7 +55,7 @@ model.compile(
 )
 
 # Fermo il training quando il validation loss raggiunge una soglia accettabile
-early_stopping = callbacks.EarlyStopping(monitor='val_loss', min_delta=0.01, patience=5, verbose=1, mode='min')
+early_stopping = callbacks.EarlyStopping(monitor='val_loss', min_delta=0.1, patience=5, verbose=1, mode='min')
 
 # Model training
 #history = model.fit(train_images, train_labels, epochs=15, validation_data=(test_images, test_labels))
@@ -85,5 +85,6 @@ plt.legend(loc='upper right')
 
 plt.tight_layout()
 plt.show()
+plt.savefig('accuracy.png')
 
 model.save("recognition_numbers.keras")
