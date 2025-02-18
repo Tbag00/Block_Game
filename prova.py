@@ -1,14 +1,13 @@
-import random
-import time
 from collections.abc import Callable
-from dataclasses import dataclass
-
+from collections import deque
 import numpy as np
-
-from aima import Problem, Node, memoize, PriorityQueue
-from aima import astar_search
-from puppolo import anima_matrice
-
+import random
+from aima import Problem, Node, memoize, PriorityQueue,GraphProblem
+from aima import depth_first_graph_search, breadth_first_graph_search, iterative_deepening_search, depth_limited_search,astar_search
+from collections.abc import Callable
+import time
+from dataclasses import dataclass
+"""HA SEGNATO L'INTER"""
 BLUE = "\033[34;1m"
 RED = "\033[31;1m"
 GREEN = "\033[32;1m"
@@ -24,7 +23,7 @@ def apply_gravity(matrix):
 
 
 def generate_matrix():
-    num_elements = 5# Numero casuale di elementi unici tra 1 e 6
+    num_elements = 2 # Numero casuale di elementi unici tra 1 e 6
     numbers = random.sample(range(1, num_elements+1), num_elements)  # Genera numeri unici
     
     matrix = np.zeros((num_elements, num_elements), dtype=int)  # Crea una matrice quadrata di zeri
@@ -40,14 +39,15 @@ def generate_matrix():
 matrix_i = generate_matrix()
 matrix_f = generate_matrix()
 
-'''print(matrix_i) #16 a 9
-print(matrix_f)'''
+print(matrix_i) #16 a 9
+print(matrix_f)
 
 colonne = matrix_i.shape[1]
 
 def prova(state:np.ndarray)->list[int]:
         colonne = state.shape[1]
         righe = state.shape[0]
+        print(righe)
         azioni_possibili = []
         for i in range(colonne):
             if state[righe-1][i] != 0:
@@ -59,7 +59,7 @@ def prova(state:np.ndarray)->list[int]:
 
         return azioni_possibili
 pisello = prova(matrix_i)
-#print(pisello)
+print(pisello)
 
 '''def nata_prova(state:np.ndarray)->None:
     righe_p = 0 #righe di partenza 
@@ -92,7 +92,7 @@ def breadth_first_graph_search1(problem: Problem, f: Callable) -> Result:
     while frontier:
         node = frontier.pop()
 
-        print(f"Exploring: \n{node.state.m_corrente}")  # Add this to see the states being explored
+       # print(f"Exploring: \n{node.state.m_corrente}")  # Add this to see the states being explored
         #culo = np.array_equal(node.state.m_corrente,node.state.goal)
        # print(culo)
 
@@ -114,9 +114,10 @@ def breadth_first_graph_search1(problem: Problem, f: Callable) -> Result:
 
 def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs) -> None:
     print(f"{RED}{name}{RESET}\n")
-    start = time.time()
+    #uso perf_counter per contare "meglio" il tempo hardware al massimo
+    start = time.perf_counter()
     sol = algorithm(problem, *args, **kwargs)
-    end = time.time()
+    end = time.perf_counter()
     if problem.goal is not None:
         print(f"\n{GREEN}PROBLEM:\n{RESET} {problem.initial.m_corrente} \n  |\n  v\n {problem.goal}")
     if isinstance(sol, Result):
@@ -129,8 +130,6 @@ def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs) -
         print(f"{GREEN}Path Cost:{RESET} {sol.path_cost}")
         print(f"{GREEN}Path Length:{RESET} {sol.depth}")
     print(f"{GREEN}Time:{RESET} {end - start} s")
-    anima_matrice(problem.initial.m_corrente, problem.goal, sol.solution())
-
 
 
 class Matrice:
@@ -205,26 +204,42 @@ class Mproblem(Problem):
                 valore = stato_corrente[r, c]
                 goal_valore = goal[r, c]
 
-                if valore != goal_valore: #se il valore è sbagliato il numero di azioni per metterlo al posto giusto dipendera dai blocchi sopra
+                if valore != goal_valore:
+                    # Il blocco è nella posizione sbagliata
                     errore_totale += 1
-                    for r_sopra in range(r-1, rows): #controlliamo sopra
-                        if stato_corrente[r_sopra][c] != 0:
-                            errore_totale += 1
-                        else:
-                            break
                 else:
                     # Il blocco è nella posizione giusta, ma ha sotto elementi sbagliati?
                     for r_sotto in range(r + 1, rows):  # Controlliamo sotto
                         if stato_corrente[r_sotto, c] != goal[r_sotto, c]:
-                            errore_totale += (rows - r_sotto)
+                            errore_totale += 1
                             break  # Basta un errore sotto per contare il blocco come problematico
 
         return errore_totale
+    
+    def posti_pisciati(problem,node)->int:
+        """
+        Euristica che assegna priorità alle colonne più a sinistra.
+        Penalizza gli elementi fuori posto con pesi decrescenti per colonne successive.
+        """
+        goal_matrix = problem.goal
+        current_matrix = node.state.m_corrente
+        rows, cols = current_matrix.shape
+        score = 0  
+
+        for col in range(cols):
+            col_weight = (cols - col)  # Peso più alto per le prime colonne
+            for row in range(rows - 1, -1, -1):  # Dal basso verso l'alto
+                if current_matrix[row][col] != goal_matrix[row][col]:
+                    score += col_weight  # Penalità ponderata per colonna
+
+        return score
+
+
 
     def distanza_manhattan(problem, node) -> int:
         stato_corrente = node.state.m_corrente
         goal = problem.goal
-
+        
         # Creiamo una mappa delle posizioni dei valori nel goal
         goal_positions = {goal[r, c]: (r, c) for r in range(goal.shape[0]) for c in range(goal.shape[1])}
 
@@ -237,9 +252,14 @@ class Mproblem(Problem):
                     distanza += abs(gr - r) + abs(gc - c)  # Distanza di Manhattan
 
         return distanza
+    
+    
 
+    
+    
 
 matrice_inizio = Matrice(matrix_i)
+
 problemazione = Mproblem(matrice_inizio, matrix_f)
 
 
@@ -251,9 +271,13 @@ print("Nuovo stato dopo l'azione:")
 print(nuovo_stato.m_corrente)
 '''
 
-#execute("BFS",breadth_first_graph_search1,problemazione, lambda node: 0)
-execute("A-Star euristica manhattan",astar_search, problemazione, problemazione.distanza_manhattan)
-#anima_matrice(matrix1, matrix2, movimenti)
+#execute("BFS HA SEGNATO L'INTER",breadth_first_graph_search1,problemazione, lambda node: 0)
+#execute("A-Star euristica sburrata",astar_search, problemazione, problemazione.posti_sburrati)
 #execute("A-Star euristica cacata",astar_search, problemazione, problemazione.posti_cacati)
+#execute("A-Star euristica manhattan",astar_search, problemazione, problemazione.distanza_manhattan)
+#execute("A-Star euristica manhattan",astar_search, problemazione, problemazione.distanza_manhattan2)
+execute("A-Star euristica pisciata",astar_search, problemazione, problemazione.posti_pisciati)
+
+
 #execute("A-Star euristica sburrata",astar_search, problemazione, problemazione.posti_sburrati)
 #execute("A-Star",astar_search, problemazione, lambda node: 0)
