@@ -18,6 +18,7 @@ img = cv2.bitwise_not(img)
 # miglioro contrasto
 img = cv2.normalize(
     img, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
+# (thresh, img) = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY | cv2.ADAPTIVE_THRESH_GAUSSIAN_C) # da' immagini invertite
 (thresh, img) = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
 # adatto input size

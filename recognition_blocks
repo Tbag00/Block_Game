@@ -5,15 +5,23 @@ from keras import datasets, models, layers, callbacks
 import matplotlib.pyplot as plt
 import cv2 as cv
 
-img = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/test.jpeg', cv.IMREAD_GRAYSCALE)
+img = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/5.jpeg', cv.IMREAD_GRAYSCALE)
 
 assert img is not None, "file could not be read, check with os.path.exists()"
 
 # miglioro contrasto
 img = cv.normalize(
     img, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
-(thresh, img) = cv.threshold(img, 128, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)
+(thresh, img) = cv.threshold(img, 128, 255, cv.THRESH_BINARY | cv.ADAPTIVE_THRESH_GAUSSIAN_C)
 
 contours, hierarchy = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-plt.imshow(cv.drawContours(img, contours, -1, (0,255,0), 3))
-plt.show()
+contours = contours[0].reshape(-1,2)
+
+img1 = img.copy()
+
+for (x, y) in contours:
+    cv.circle(img1, (x, y), 1, (255, 0, 0), 3)
+
+cv.imshow('Output', img1)
+cv.waitKey(0)
+cv.destroyAllWindows()
