@@ -9,6 +9,7 @@ from aima import depth_first_graph_search, breadth_first_graph_search, iterative
 from collections.abc import Callable
 import time
 from dataclasses import dataclass
+from puppolo import anima_matrice
 
 """HA SEGNATO L'INTER"""
 BLUE = "\033[34;1m"
@@ -137,6 +138,7 @@ def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs) -
         print(f"{GREEN}Path Cost:{RESET} {sol.path_cost}")
         print(f"{GREEN}Path Length:{RESET} {sol.depth}")
     print(f"{GREEN}Time:{RESET} {end - start} s")
+    anima_matrice(problem.initial.m_corrente, problem.goal, sol.solution())
 
 
 class Matrice:
@@ -306,5 +308,5 @@ class Mproblem(Problem):
 matrice_inizio = Matrice(matrix_i)
 problemazione = Mproblem(matrice_inizio, matrix_f)
 execute("A-Star euristica subgoal pesata", astar_search, problemazione, problemazione.weighted_subgoal)
-execute("A-Star euristica subgoal pesata++", astar_search, problemazione, problemazione.heavy_weighted_subgoal)
+#execute("A-Star euristica subgoal pesata++", astar_search, problemazione, problemazione.heavy_weighted_subgoal)
 
