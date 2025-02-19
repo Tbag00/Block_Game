@@ -9,17 +9,17 @@ from tkinter import filedialog
 
 
 # Apri la finestra di dialogo per selezionare un'immagine
-def upload_image(img: cv.Mat):
+def upload_image(is_iniziale: bool):
     file_path = filedialog.askopenfilename(title="Seleziona un'immagine", filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.bmp;*.tiff")])
     
     if file_path:
         # Carica l'immagine con OpenCV
-        img = cv.imread(file_path)
-
-        # Visualizza l'immagine in una finestra OpenCV
-        cv.imshow("Immagine Caricata", img)
-        cv.waitKey(0)
-        cv.destroyAllWindows()
+        if is_iniziale:
+            global immagine_iniziale
+            immagine_iniziale = cv.imread(file_path)
+        else:
+            global immagine_finale
+            immagine_finale = cv.imread(file_path)
 
 # Definisci la funzione on_close
 def on_close():
@@ -31,8 +31,8 @@ if __name__ == "__main__":
     immagine_iniziale = cv.imread('C:\\Users\\drink\\Downloads\\iniziale.jpeg',cv.IMREAD_GRAYSCALE)
     #immagine_finale = cv.imread('C:\\Users\\drink\\Downloads\\iniziale.jpeg',cv.IMREAD_GRAYSCALE)
     immagine_finale = cv.imread('C:\\Users\\drink\\Downloads\\puppalon.jpeg',cv.IMREAD_GRAYSCALE)"""
-    immagine_iniziale: cv.Mat
-    immagine_finale: cv.Mat
+    immagine_iniziale: cv.Mat = None
+    immagine_finale: cv.Mat = None
     # Crea la finestra principale
     root = tk.Tk()
     root.title("Block's World")
@@ -40,11 +40,11 @@ if __name__ == "__main__":
     root.protocol("WM_DELETE_WINDOW", on_close)
 
     # Crea il pulsante "Upload"
-    upload_button = tk.Button(root, text="Upload Stato iniziale", command=lambda:upload_image(immagine_iniziale))
+    upload_button = tk.Button(root, text="Upload Stato iniziale", command=lambda:upload_image(is_iniziale= True))
     upload_button.pack(pady=20)
 
     # Crea il pulsante "Upload"
-    upload_button = tk.Button(root, text="Upload Stato iniziale", command=lambda:upload_image(immagine_finale))
+    upload_button = tk.Button(root, text="Upload Stato finale", command=lambda:upload_image(is_iniziale= False))
     upload_button.pack(pady=20)
 
     # Start the main event loop
