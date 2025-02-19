@@ -9,7 +9,7 @@ from tkinter import filedialog
 
 
 # Apri la finestra di dialogo per selezionare un'immagine
-def upload_image() -> cv.Mat:
+def upload_image(img: cv.Mat):
     file_path = filedialog.askopenfilename(title="Seleziona un'immagine", filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.bmp;*.tiff")])
     
     if file_path:
@@ -20,23 +20,24 @@ def upload_image() -> cv.Mat:
         cv.imshow("Immagine Caricata", img)
         cv.waitKey(0)
         cv.destroyAllWindows()
-    return img
 
 if __name__ == "__main__":
     """
     immagine_iniziale = cv.imread('C:\\Users\\drink\\Downloads\\iniziale.jpeg',cv.IMREAD_GRAYSCALE)
     #immagine_finale = cv.imread('C:\\Users\\drink\\Downloads\\iniziale.jpeg',cv.IMREAD_GRAYSCALE)
     immagine_finale = cv.imread('C:\\Users\\drink\\Downloads\\puppalon.jpeg',cv.IMREAD_GRAYSCALE)"""
+    immagine_inziale: cv.Mat
+    immagine_finale: cv.Mat
     # Crea la finestra principale
     root = tk.Tk()
     root.title("Block's World")
 
     # Crea il pulsante "Upload"
-    upload_button = tk.Button(root, text="Upload Stato iniziale", command=upload_image)
+    upload_button = tk.Button(root, text="Upload Stato iniziale", command=lambda:upload_image(immagine_iniziale))
     upload_button.pack(pady=20)
 
     # Crea il pulsante "Upload"
-    upload_button = tk.Button(root, text="Upload Stato iniziale", command=upload_image)
+    upload_button = tk.Button(root, text="Upload Stato iniziale", command=lambda:upload_image(immagine_finale))
     upload_button.pack(pady=20)
 
     matrice_iniziale = getStato(immagine_iniziale)
