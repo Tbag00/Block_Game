@@ -29,8 +29,8 @@ def getStato(img: cv.Mat) -> np.array:
     img = cv.cvtColor(img, cv.COLOR_BGR2GRAY) # scala grigi
     img = adjust_gamma(img, gamma=1.7) # schiarisce immagine
     # inspessisce bordi
-    kernel = cv.getStructuringElement(cv.MORPH_RECT, (3,3)) 
-    img = cv.morphologyEx(img, cv.MORPH_CLOSE, kernel, iterations=2)
+    #kernel = cv.getStructuringElement(cv.MORPH_RECT, (3,3)) 
+    #img = cv.morphologyEx(img, cv.MORPH_CLOSE, kernel, iterations=2)
     # normalizza
     img = cv.normalize(
         img, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
