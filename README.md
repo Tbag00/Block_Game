@@ -23,7 +23,11 @@ Non si possono prendere blocchi da una colonna vuota
 # Stati
 In una matrice 6x6 un valore è 0 se non è occupato da blocchi, i se è occupato dal blocco numero i, non possono esserci due caselle con lo stesso numero
 
-# Euristica (da scrivere)
+# Euristica
+L'euristica utiizzata si basa sul concetto di relaxed problem, conta semplicemente quanti sono i blocchi nella posizione sbagliata.
+Il problema di questa euristica è che in alcuni casi impiega discreto tempo essendo molto semplice, quindi abbiamo sviluppato anche una relaxed pesata che conta invece i blocchi sopra i blocchi sbagliati e i blocchi sotto quelli giusti ma non è ammissibile.
+Abbiamo fatto anche un euristica basata sul concetto di distanza di manhattan, anch'essa inammissibile ma non per un problema di implementazione ma perchè non rappresentatitva del problema.
+Inoltre abbiamo fatto anche un'euristica basata sui subgoal del problema ossia sistemare le colonne, che da quindi la priorita a sistemare la colonna più a sinistra contenente blocchi nel posto sbagliato. Anch'essa non è ammissibile ma mediamente è la più veloce.
 
 # Animazione (da scrivere)
 
