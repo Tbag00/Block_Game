@@ -109,12 +109,15 @@ def getStato(img: cv.Mat) -> np.array:
             inner_recs.append(rectExt)
 
     for rect in inner_recs:
-        rect_img = img[rect["y"] + 10:rect["y"] + rect["h"] - 10, rect["x"] + 10:rect["x"] + rect["w"] - 10]
+        rect_img = img[rect["y"]:rect["y"] + rect["h"], rect["x"]:rect["x"] + rect["w"]]
+        cv.imshow("rettangolo",rect_img)
+        cv.waitKey(0)
+
         rect["value"] = recon_number(rect_img)
         print(rect["value"])
     print("ho rilevato %s blocchi" %len(inner_recs))
+    cv.destroyAllWindows()
     return costruisci_mat(inner_recs)
-
 
 # controlla se rettangolo 1 contiene rettangolo 2
 def inside(rectExt: dict, rectInt: dict) -> bool:
@@ -132,14 +135,17 @@ def recon_number(rect: cv.Mat) -> int:
     # adatto input size
     rect = cv.bitwise_not(rect)
     rect = cv.resize(rect, (28, 28))
-    predictions = model.predict(np.array([rect]))  # .argmax(axis=1)
+    cv.imshow("input", rect)
+    cv.waitKey(0)
+
+    predictions = model.predict(np.array([rect])) 
     predictions[:, 7:] = -np.inf
     predictions[:, 0] = -np.inf
     return predictions.argmax(axis=1)
 
 
+# Simula la gravità facendo cadere i numeri verso il basso.
 def apply_gravity(matrix) -> np.matrix:
-    """Simula la gravità facendo cadere i numeri verso il basso."""
     rows, cols = matrix.shape
     for col in range(cols):
         non_zero_values = [matrix[row][col] for row in range(rows) if matrix[row][col] != 0]
@@ -176,7 +182,7 @@ def costruisci_mat(rects: list) -> np.matrix:
     # ordine crescente
     mat = np.sort(mat, axis=2)
     res = mat[:, :, 0]
-    res = res[::-1, :]  # ordine decrescente
+    res = res[::-1]  # ordine decrescente
 
     apply_gravity(res)
     print(res)

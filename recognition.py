@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 #from keras.models import Sequential
 #from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Input
 import visualkeras
+from contextlib import redirect_stdout
 #from tensorflow.keras.callbacks import EarlyStopping
 
 # inserire immagini dei numeri accettati da mnist
@@ -40,13 +41,17 @@ model = models.Sequential([
     layers.Input(shape=(28,28,1)),
     layers.Conv2D(16, (3, 3), activation='relu'),
     layers.MaxPooling2D((2, 2)),
-    layers.Conv2D(16, (3, 3), activation='relu'),
+    layers.Conv2D(64, (3, 3), activation='relu'),
     layers.MaxPooling2D((2,2)),
     layers.Flatten(),
     #layers.Dense(64, activation='relu'),
     layers.Dense(10, activation='softmax')
 ])
+# stampo e salvo model summary
 model.summary()
+with open('modelsummary.txt', 'w') as f:
+    with redirect_stdout(f):
+        model.summary()
 
 # Compile the model
 model.compile(
@@ -85,7 +90,7 @@ plt.ylim([0.0, 2])
 plt.legend(loc='upper right')
 
 plt.tight_layout()
+plt.savefig("Accuracy_Loss_CNN")
 plt.show()
-plt.savefig('accuracy.png')
 
 model.save("recognition_numbers.keras", overwrite= True)
