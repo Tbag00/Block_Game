@@ -1,4 +1,5 @@
 from copy import deepcopy
+import copy
 from os import remove
 import re
 import numpy as np
@@ -106,27 +107,20 @@ def costruisci_mat(rects: list) -> np.matrix:
                     else:
                         break
             col += 1
+    # ordine crescente
     mat = np.sort(mat, axis=2)
     res = mat[:,:,0]
+    res = res[::-1,:]   # ordine decrescente
+    
     apply_gravity(res)
     print(res)
     return res
-    """ for i in range(n):
-        print("rect",rect["value"])
-        row = 0
-        mat[row][col] = rects[i]["value"]
-        for j in range(n):
-                if rects[i]["x"]-rects["w"]/2.0 <= rects[i]["x"] <= rect["x"]+rect["w"]/2.0:
-                    print("item",item["value"])
-                    mat[row][col] = item["value"]
-                    row += 1
-                else:
-                    break
-        col += 1
-            """
+
+
+
 # importo modello e immagine
 model: models.Sequential = models.load_model("recognition_numbers.keras")
-img = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/ombroso.jpeg', cv.IMREAD_GRAYSCALE)
+img = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/img_ultrahd.jpeg', cv.IMREAD_GRAYSCALE)
 #img = cv.resize(img, (1024, 512))
 assert img is not None, "file could not be read, check with os.path.exists()"
 larghezza_img = img.shape[1]
@@ -157,6 +151,7 @@ img = cv.bitwise_not(img)
 rects = []
 contours, hierarchy = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
+cv.imshow("test",img)
 for contour in contours:
     x,y,w,h = cv.boundingRect(contour)
     ratio = w/float(h)
@@ -173,6 +168,9 @@ for contour in contours:
 
             # salvo rettangoli con dimensioni limitate
             if w > (larghezza_img / 12) and h > (altezza_img / 12) and w < (larghezza_img / 4) and h < (altezza_img / 4):
+                cv.rectangle(img, (x,y), (x+w,y+h),(255,0,0),10)
+                cv.imshow("test2", img)
+                cv.waitKey(0)
                 rects.append({
                     "x":x, "y":y, "w":w, "h":h, "value":0
                 })
@@ -181,13 +179,18 @@ for contour in contours:
 rects = sorted(rects, key= lambda r:r["x"])
 
 # escludo rettangoli esterni
+inner_recs = copy.deepcopy(rects)
 for rectExt in rects:
+    exterior = False
     for rectInt in rects:
-        if inside(rectExt, rectInt):
-            print("removed triangle: %s" %rectExt["x"])
-            rects.remove(rectExt)
+        if inside(rectExt, rectInt) and not rectExt is rectInt:
+            print("removed rectangle: %s" %rectExt["x"])
+            exterior = True
+    if exterior == False:
+        inner_recs.append(rectExt)
 
-for rect in rects:
+
+for rect in inner_recs:
     rect_img = img[rect["y"]+10:rect["y"]+rect["h"]-10, rect["x"]+10:rect["x"]+rect["w"]-10]
     #cv.imshow("numero", rect_img)
     #cv.waitKey(0)
@@ -196,9 +199,3 @@ for rect in rects:
 
 costruisci_mat(rects)
 cv.destroyAllWindows()
-
-#drinkodice
-
-'''import numpy as np'''
-
-#'''
