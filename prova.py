@@ -18,17 +18,17 @@ GREEN = "\033[32;1m"
 RESET = "\033[0m"
 
 
-def apply_gravity(matrix):
+'''def apply_gravity(matrix):
     """Simula la gravità facendo cadere i numeri verso il basso."""
     rows, cols = matrix.shape
     for col in range(cols):
         non_zero_values = [matrix[row][col] for row in range(rows) if matrix[row][col] != 0]
         zero_count = rows - len(non_zero_values)
         matrix[:, col] = [0] * zero_count + non_zero_values  # Riempie con zeri sopra e numeri sotto
-    return matrix
+    return matrix'''
 
 
-def generate_matrix():
+'''def generate_matrix():
     num_elements = 6  # Numero casuale di elementi unici tra 1 e 6
     numbers = random.sample(range(1, num_elements + 1), num_elements)  # Genera numeri unici
 
@@ -39,15 +39,15 @@ def generate_matrix():
         row, col = divmod(pos, num_elements)
         matrix[row][col] = num  # Inserisce un numero unico tra 1 e 6
 
-    return apply_gravity(matrix)
+    return apply_gravity(matrix)'''
 
 
-matrix_i = generate_matrix()
+'''matrix_i = generate_matrix()
 matrix_f = generate_matrix()
 
 print(matrix_i)  #16 a 9
 print(matrix_f)
-
+'''
 
 def prova(state: np.ndarray) -> list[tuple[int, int]]:
     colonne = state.shape[1]
@@ -62,12 +62,12 @@ def prova(state: np.ndarray) -> list[tuple[int, int]]:
                         azioni_possibili.append((i, j))
                     # azioni_possibili.append(j)
     return azioni_possibili
-
+'''
 
 pisello = prova(matrix_i)
 print(pisello)
 
-'''def nata_prova(state:np.ndarray)->None:
+def nata_prova(state:np.ndarray)->None:
     righe_p = 0 #righe di partenza 
     righe_a = state.shape[0]-1 #righe di arrivo per le colonne di arrivo
     while state[righe_p][pisello[0][0]] == 0:
@@ -90,7 +90,7 @@ class Result:
     nodes_left_in_frontier: int
 
 
-def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs) -> None:
+def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs):
     print(f"{RED}{name}{RESET}\n")
 #   uso perf_counter per contare "meglio" il tempo hardware al massimo
     start = time.perf_counter()
@@ -108,7 +108,7 @@ def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs) -
         print(f"{GREEN}Path Cost:{RESET} {sol.path_cost}")
         print(f"{GREEN}Path Length:{RESET} {sol.depth}")
     print(f"{GREEN}Time:{RESET} {end - start} s")
-    #anima_matrice(problem.initial.m_corrente, problem.goal, sol.solution())
+    return sol.solution()
 
 
 class Matrice:
@@ -311,9 +311,9 @@ class Mproblem(Problem):
 
 
 
-matrice_inizio = Matrice(matrix_i)
+'''matrice_inizio = Matrice(matrix_i)
 problemazione = Mproblem(matrice_inizio, matrix_f)
 #execute("A-Star euristica subgoal", astar_search, problemazione, problemazione.subgoal_problem)
 execute("A-Star euristica subgoal pesata", astar_search, problemazione, problemazione.weighted_subgoal)
 execute("A-Star euristica ammissibile", astar_search, problemazione, problemazione.relaxed_problem)
-execute("A-Star drink ti amo", astar_search, problemazione, problemazione.euristica_drinkastica)
+execute("A-Star drink ti amo", astar_search, problemazione, problemazione.euristica_drinkastica)'''

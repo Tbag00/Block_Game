@@ -12,8 +12,10 @@ import cv2 as cv
 # importo modello
 model: models.Sequential = models.load_model("recognition_numbers.keras")
 
+
 def getStato(img: cv.Mat) -> np.array:
     assert img is not None, "file could not be read, check with os.path.exists()"
+    #img = cv.resize(img, (1024, 512))
     larghezza_img = img.shape[1]
     altezza_img = img.shape[0]
 
@@ -30,69 +32,75 @@ def getStato(img: cv.Mat) -> np.array:
     contours, hierarchy = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
     for contour in contours:
-        x,y,w,h = cv.boundingRect(contour)
-        ratio = w/float(h)
+        x, y, w, h = cv.boundingRect(contour)
+        ratio = w / float(h)
 
         # controllo se la forma e' rettangolare
         if 0.8 < ratio < 2.0:
             # approssimo rettangolo
-            epsilon = 0.14*cv.arcLength(contour,True)
-            approx = cv.approxPolyDP(contour,epsilon,True)
+            epsilon = 0.14 * cv.arcLength(contour, True)
+            approx = cv.approxPolyDP(contour, epsilon, True)
 
             # controllo che contour sia rettangolo
             if len(approx) == 4:
-                x,y,w,h = cv.boundingRect(approx)
+                x, y, w, h = cv.boundingRect(approx)
 
                 # salvo rettangoli con dimensioni limitate
-                if w > (larghezza_img / 12) and h > (altezza_img / 12) and w < (larghezza_img / 4) and h < (altezza_img / 4):
-                    cv.rectangle(img, (x,y), (x+w,y+h),(255,0,0),10)
+                if w > (larghezza_img / 12.0) and h > (altezza_img / 12.0) and w < (larghezza_img / 2.0) and h < (altezza_img / 2.0):
+                    cv.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 10)
                     cv.imshow("test2", img)
                     cv.waitKey(0)
                     rects.append({
-                        "x":x, "y":y, "w":w, "h":h, "value":0
+                        "x": x, "y": y, "w": w, "h": h, "value": 0
                     })
+    cv.destroyAllWindows()
 
     # ordino i rettangoli da sinistra a destra
-    rects = sorted(rects, key= lambda r:r["x"])
+    rects = sorted(rects, key=lambda r: r["x"])
 
+    i=0
     # escludo rettangoli esterni
-    inner_recs = copy.deepcopy(rects)
+    inner_recs = []
     for rectExt in rects:
         exterior = False
         for rectInt in rects:
             if inside(rectExt, rectInt) and not rectExt is rectInt:
-                print("removed rectangle: %s" %rectExt["x"])
+                print("removed rectangle: %s" % rectExt["x"])
                 exterior = True
         if exterior == False:
+            print(i)
+            i+=1
             inner_recs.append(rectExt)
 
     for rect in inner_recs:
-        rect_img = img[rect["y"]+10:rect["y"]+rect["h"]-10, rect["x"]+10:rect["x"]+rect["w"]-10]
+        rect_img = img[rect["y"] + 10:rect["y"] + rect["h"] - 10, rect["x"] + 10:rect["x"] + rect["w"] - 10]
         rect["value"] = recon_number(rect_img)
         print(rect["value"])
-    
-    return costruisci_mat(rects)
+    print(len(inner_recs))
+    return costruisci_mat(inner_recs)
 
 
 # controlla se rettangolo 1 contiene rettangolo 2
 def inside(rectExt: dict, rectInt: dict) -> bool:
-    if rectInt["x"] >= rectExt["x"] and rectInt["y"] >= rectExt["y"]:
-        if rectInt["x"]+rectInt["w"] <= rectExt["x"]+ rectExt["w"]:
-            if rectInt["y"]+rectInt["h"] <= rectExt["y"]+rectExt["h"]:
+    if rectInt["x"] > rectExt["x"] and rectInt["y"] > rectExt["y"]:
+        if rectInt["x"] + rectInt["w"] < rectExt["x"] + rectExt["w"]:
+            if rectInt["y"] + rectInt["h"] < rectExt["y"] + rectExt["h"]:
                 return True
-    else: 
+    else:
         return False
+
 
 # Input: immagine contenente solo numero
 # Output: etichetta
 def recon_number(rect: cv.Mat) -> int:
     # adatto input size
     rect = cv.bitwise_not(rect)
-    rect = cv.resize(rect,(28,28))
-    predictions = model.predict(np.array([rect]))#.argmax(axis=1)
+    rect = cv.resize(rect, (28, 28))
+    predictions = model.predict(np.array([rect]))  # .argmax(axis=1)
     predictions[:, 7:] = -np.inf
     predictions[:, 0] = -np.inf
     return predictions.argmax(axis=1)
+
 
 def apply_gravity(matrix) -> np.matrix:
     """Simula la gravità facendo cadere i numeri verso il basso."""
@@ -102,6 +110,7 @@ def apply_gravity(matrix) -> np.matrix:
         zero_count = rows - len(non_zero_values)
         matrix[:, col] = [0] * zero_count + non_zero_values  # Riempie con zeri sopra e numeri sotto
     return matrix
+
 
 def costruisci_mat(rects: list) -> np.matrix:
     n = len(rects)
@@ -115,12 +124,12 @@ def costruisci_mat(rects: list) -> np.matrix:
     inseriti = []
     for rect in rects:
         if rect not in inseriti:
-            print("rect",rect["value"])
+            print("rect", rect["value"])
             row = 0
             for item in rects:
                 if item not in inseriti:
-                    if rect["x"]-rect["w"]/2.0 <= item["x"] <= rect["x"]+rect["w"]/2.0:
-                        print("item",item["value"])
+                    if rect["x"] - rect["w"] / 2.0 <= item["x"] <= rect["x"] + rect["w"] / 2.0:
+                        print("item", item["value"])
                         mat[row][col][0] = item["value"]
                         mat[row][col][1] = item["y"]
                         row += 1
@@ -130,20 +139,20 @@ def costruisci_mat(rects: list) -> np.matrix:
             col += 1
     # ordine crescente
     mat = np.sort(mat, axis=2)
-    res = mat[:,:,0]
-    res = res[::-1,:]   # ordine decrescente
-    
+    res = mat[:, :, 0]
+    res = res[::-1, :]  # ordine decrescente
+
     apply_gravity(res)
     print(res)
     return res
 
 
-
-i#mg = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/img_ultrahd.jpeg', cv.IMREAD_GRAYSCALE)
-#img = cv.resize(img, (1024, 512))
+'''  # img = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/img_ultrahd.jpeg', cv.IMREAD_GRAYSCALE)
+# img = cv.resize(img, (1024, 512))
 assert img is not None, "file could not be read, check with os.path.exists()"
 larghezza_img = img.shape[1]
 altezza_img = img.shape[0]
+'''
 
 """
 # miglioro contrasto
@@ -156,8 +165,8 @@ img=clahe.apply(img)
 blurred = cv.GaussianBlur(img, (21, 21), 0)
 img = cv.absdiff(img, blurred)
 img = cv.normalize(img, None, 0, 255, cv.NORM_MINMAX)"""
-#kernel = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
-#img = cv.morphologyEx(img, cv.MORPH_CLOSE, kernel, iterations=2)
+'''# kernel = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
+# img = cv.morphologyEx(img, cv.MORPH_CLOSE, kernel, iterations=2)
 img = cv.normalize(
     img, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
 (thresh, img) = cv.threshold(img, 128, 255, cv.THRESH_BINARY | cv.ADAPTIVE_THRESH_GAUSSIAN_C)
@@ -170,32 +179,33 @@ img = cv.bitwise_not(img)
 rects = []
 contours, hierarchy = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
-cv.imshow("test",img)
+cv.imshow("test", img)
 for contour in contours:
-    x,y,w,h = cv.boundingRect(contour)
-    ratio = w/float(h)
+    x, y, w, h = cv.boundingRect(contour)
+    ratio = w / float(h)
 
     # controllo se la forma e' rettangolare
     if 0.8 < ratio < 2.0:
         # approssimo rettangolo
-        epsilon = 0.14*cv.arcLength(contour,True)
-        approx = cv.approxPolyDP(contour,epsilon,True)
+        epsilon = 0.14 * cv.arcLength(contour, True)
+        approx = cv.approxPolyDP(contour, epsilon, True)
 
         # controllo che contour sia rettangolo
         if len(approx) == 4:
-            x,y,w,h = cv.boundingRect(approx)
+            x, y, w, h = cv.boundingRect(approx)
 
             # salvo rettangoli con dimensioni limitate
-            if w > (larghezza_img / 12) and h > (altezza_img / 12) and w < (larghezza_img / 4) and h < (altezza_img / 4):
-                cv.rectangle(img, (x,y), (x+w,y+h),(255,0,0),10)
+            if w > (larghezza_img / 12) and h > (altezza_img / 12) and w < (larghezza_img / 4) and h < (
+                    altezza_img / 4):
+                cv.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 10)
                 cv.imshow("test2", img)
                 cv.waitKey(0)
                 rects.append({
-                    "x":x, "y":y, "w":w, "h":h, "value":0
+                    "x": x, "y": y, "w": w, "h": h, "value": 0
                 })
 
 # ordino i rettangoli da sinistra a destra
-rects = sorted(rects, key= lambda r:r["x"])
+rects = sorted(rects, key=lambda r: r["x"])
 
 # escludo rettangoli esterni
 inner_recs = copy.deepcopy(rects)
@@ -203,18 +213,17 @@ for rectExt in rects:
     exterior = False
     for rectInt in rects:
         if inside(rectExt, rectInt) and not rectExt is rectInt:
-            print("removed rectangle: %s" %rectExt["x"])
+            print("removed rectangle: %s" % rectExt["x"])
             exterior = True
     if exterior == False:
         inner_recs.append(rectExt)
 
-
 for rect in inner_recs:
-    rect_img = img[rect["y"]+10:rect["y"]+rect["h"]-10, rect["x"]+10:rect["x"]+rect["w"]-10]
-    #cv.imshow("numero", rect_img)
-    #cv.waitKey(0)
+    rect_img = img[rect["y"] + 10:rect["y"] + rect["h"] - 10, rect["x"] + 10:rect["x"] + rect["w"] - 10]
+    # cv.imshow("numero", rect_img)
+    # cv.waitKey(0)
     rect["value"] = recon_number(rect_img)
     print(rect["value"])
 
 costruisci_mat(rects)
-cv.destroyAllWindows()
+cv.destroyAllWindows()'''

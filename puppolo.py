@@ -102,7 +102,7 @@ def anima_matrice(matrix1, matrix2, movimenti):
     sys.exit()
 
 
-if __name__ == "__main__":
+'''if __name__ == "__main__":
     size = 6  #np.random.randint(2, 7)
     matrix1 = np.array([[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 6, 0],
                [2, 5, 0, 0, 3, 4]])
@@ -114,4 +114,4 @@ if __name__ == "__main__":
                  (5, 2), (4, 3), (4, 5), (3, 5)]  # Esempio di movimenti: (colonna_sorgente, colonna_destinazione)
     #movimenti = [(5, 2), (1, 5), (4, 2), (1, 5), (0, 1), (4, 0)]
 
-    anima_matrice(matrix1, matrix2, movimenti)
+    anima_matrice(matrix1, matrix2, movimenti)'''
