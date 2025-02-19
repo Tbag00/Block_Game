@@ -11,6 +11,7 @@ import time
 from dataclasses import dataclass
 from puppolo import anima_matrice
 
+
 """HA SEGNATO L'INTER"""
 BLUE = "\033[34;1m"
 RED = "\033[31;1m"
@@ -270,7 +271,7 @@ class Mproblem(Problem):
         #print(blocchi_dal_goal)
         return blocchi_dal_goal
 
-
+"""
 matrice_inizio = np.array(
     [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 6, 0],
      [2, 5, 0, 0, 3, 4]])
@@ -295,3 +296,4 @@ execute("A-Star euristica manhattan", astar_search, problemazione, problemazione
                         distanza += r_sopra
                     else:
                         break'''
+"""

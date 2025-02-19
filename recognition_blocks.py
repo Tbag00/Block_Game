@@ -18,24 +18,30 @@ def adjust_gamma(image, gamma):
 
 def getStato(img: cv.Mat) -> np.array:
     assert img is not None, "file could not be read, check with os.path.exists()"
-    #img = cv.resize(img, (1024, 512))
+
+    # dati immagine
     larghezza_img = img.shape[1]
     altezza_img = img.shape[0]
     print("larghezza:", larghezza_img)
     print("altezza:", altezza_img)
-    img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    
+    # correzione immagine
+    img = cv.cvtColor(img, cv.COLOR_BGR2GRAY) # scala grigi
     img = adjust_gamma(img, gamma=1.7) # schiarisce immagine
-    kernel = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
+    # inspessisce bordi
+    kernel = cv.getStructuringElement(cv.MORPH_RECT, (3,3)) 
     img = cv.morphologyEx(img, cv.MORPH_CLOSE, kernel, iterations=2)
+    # normalizza
     img = cv.normalize(
         img, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
-    (thresh, img) = cv.threshold(img, 128, 255, cv.THRESH_BINARY | cv.ADAPTIVE_THRESH_GAUSSIAN_C)
+    (thresh, img) = cv.threshold(img, 180, 255, cv.THRESH_BINARY | cv.ADAPTIVE_THRESH_GAUSSIAN_C)
     
-    cv.imshow("test", img)
+    # controllo immagine elaborata
+    cv.imshow("immagine elaborata", img)
     cv.waitKey(0)
     cv.destroyAllWindows()
 
-    # decommenta se usi caussiana poché inverte i colori quindi li inverto
+    # decommenta se usi gaussiana poché inverte i colori
     img = cv.bitwise_not(img)
 
     # lista contenente i rettangoli
@@ -49,28 +55,40 @@ def getStato(img: cv.Mat) -> np.array:
 
         # controllo se la forma e' rettangolare
         if 0.8 < ratio < 2.0:
+
             # approssimo rettangolo
-            epsilon = 0.05 * cv.arcLength(contour, True)
+            epsilon = 0.01 * cv.arcLength(contour, True) # piu' e' alto meno restrittivo e' nell'approssimazione delle righe dritte
             approx = cv.approxPolyDP(contour, epsilon, True)
             x, y, w, h = cv.boundingRect(approx)
-            print("w: ",w)
-            print("h: ", h)
+
+            # stampo dati figura
+            print("x: %s, w: %s, y: %s, h: %s" %(x, w, y, h))
             print("lati:", len(approx))
+            
+            """ # controllo se non funziona
+            cv.drawContours(img, [contour], -1, (0,255,255), 20)
+            cv.drawContours(img, [approx], -1, (0,0,255), 10)
             cv.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 10)
             cv.imshow("test2", img)
             cv.waitKey(0)
+            """
 
             # controllo che contour sia rettangolo
             if len(approx) == 4:
                 x, y, w, h = cv.boundingRect(approx)
-                print("w: ",w)
-                print("h: ", h)
+                
+                """ # controllo se non funziona
                 cv.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 10)
                 cv.imshow("test2", img)
                 cv.waitKey(0)
-
+                """
                 # salvo rettangoli con dimensioni limitate
                 if w > (larghezza_img / 16.0) and h > (altezza_img / 16.0) and w < (larghezza_img / 4.0) and h < (altezza_img / 4.0):
+                    """ # mostro triangoli
+                    cv.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 10)
+                    cv.imshow("test2", img)
+                    cv.waitKey(0)
+                    """
                     rects.append({
                         "x": x, "y": y, "w": w, "h": h, "value": 0
                     })
@@ -79,7 +97,6 @@ def getStato(img: cv.Mat) -> np.array:
     # ordino i rettangoli da sinistra a destra
     rects = sorted(rects, key=lambda r: r["x"])
 
-    i=0
     # escludo rettangoli esterni
     inner_recs = []
     for rectExt in rects:
@@ -89,15 +106,13 @@ def getStato(img: cv.Mat) -> np.array:
                 print("removed rectangle: %s" % rectExt["x"])
                 exterior = True
         if exterior == False:
-            print(i)
-            i+=1
             inner_recs.append(rectExt)
 
     for rect in inner_recs:
         rect_img = img[rect["y"] + 10:rect["y"] + rect["h"] - 10, rect["x"] + 10:rect["x"] + rect["w"] - 10]
         rect["value"] = recon_number(rect_img)
         print(rect["value"])
-    print(len(inner_recs))
+    print("ho rilevato %s blocchi" %len(inner_recs))
     return costruisci_mat(inner_recs)
 
 

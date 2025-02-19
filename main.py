@@ -32,11 +32,7 @@ def on_close():
     root.quit()  # Esce dal mainloop e chiude la finestra
 
 if __name__ == "__main__":
-    """
-    immagine_iniziale = cv.imread('C:\\Users\\drink\\Downloads\\iniziale.jpeg',cv.IMREAD_GRAYSCALE)
-    #immagine_finale = cv.imread('C:\\Users\\drink\\Downloads\\iniziale.jpeg',cv.IMREAD_GRAYSCALE)
-    immagine_finale = cv.imread('C:\\Users\\drink\\Downloads\\puppalon.jpeg',cv.IMREAD_GRAYSCALE)"""
-    '''immagine_iniziale: cv.Mat = None
+    immagine_iniziale: cv.Mat = None
     immagine_finale: cv.Mat = None
     # Crea la finestra principale
     root = tk.Tk()
@@ -59,26 +55,22 @@ if __name__ == "__main__":
     cv.waitKey(0)
     cv.imshow("finale", immagine_finale)
     cv.waitKey(0)
-    cv.destroyAllWindows()'''
+    cv.destroyAllWindows()
+    """
     immagine_iniziale = cv.imread("/home/tommaso/Downloads/iniziale.jpeg")
     immagine_finale = cv.imread("/home/tommaso/Downloads/finale.jpeg")
+    """
     matrice_iniziale = getStato(immagine_iniziale)
     matrice_finale = getStato(immagine_finale)
+    print("matrice iniziale:")
     print(matrice_iniziale)
     print("matrice finale:")
     print(matrice_finale)
-    '''    if matrice_iniziale.shape[0] != matrice_finale.shape[0]:
-        if matrice_iniziale.shape[0] > matrice_finale.shape[0]:
-            nuova_dimensione =
-            matrice_quadrata = np.zeros((nuova_dimensione, nuova_dimensione), dtype=int)
-            
-            
-            
-            matrice_finale = np.hstack((matrice_finale, np.zeros((matrice_finale.shape[0], matrice_iniziale.shape[0] - matrice_finale.shape[0]), dtype=int)))
-        else:
-            matrice_iniziale = np.hstack((matrice_iniziale, np.zeros((matrice_iniziale.shape[0], matrice_finale.shape[0] - matrice_iniziale.shape[0]), dtype=int)))'''
     problemazione = Mproblem(Matrice(matrice_iniziale),matrice_finale)
-    soluzione1 = execute("A-Star euristica subgoal pesata", astar_search, problemazione, problemazione.weighted_subgoal)
+    soluzione1 = execute("A-Star euristica subgoal", astar_search, problemazione, problemazione.subgoal_problem)
     anima_matrice(matrice_iniziale, matrice_finale, soluzione1)
-    soluzione2  = execute("A-Star euristica ammissibile", astar_search, problemazione, problemazione.relaxed_problem)
+    soluzione2  = execute("A-Star euristica relaxed", astar_search, problemazione, problemazione.relaxed_problem)
     anima_matrice(matrice_iniziale, matrice_finale, soluzione2)
+    soluzione3  = execute("A-Star euristica relaxed pesata", astar_search, problemazione, problemazione.weighted_relax)
+    anima_matrice(matrice_iniziale, matrice_finale, soluzione3)   
+
