@@ -21,6 +21,11 @@ def upload_image(img: cv.Mat):
         cv.waitKey(0)
         cv.destroyAllWindows()
 
+# Definisci la funzione on_close
+def on_close():
+    print("Window is closing!")
+    root.quit()  # Esce dal mainloop e chiude la finestra
+
 if __name__ == "__main__":
     """
     immagine_iniziale = cv.imread('C:\\Users\\drink\\Downloads\\iniziale.jpeg',cv.IMREAD_GRAYSCALE)
@@ -32,6 +37,8 @@ if __name__ == "__main__":
     root = tk.Tk()
     root.title("Block's World")
 
+    root.protocol("WM_DELETE_WINDOW", on_close)
+
     # Crea il pulsante "Upload"
     upload_button = tk.Button(root, text="Upload Stato iniziale", command=lambda:upload_image(immagine_iniziale))
     upload_button.pack(pady=20)
@@ -39,6 +46,9 @@ if __name__ == "__main__":
     # Crea il pulsante "Upload"
     upload_button = tk.Button(root, text="Upload Stato iniziale", command=lambda:upload_image(immagine_finale))
     upload_button.pack(pady=20)
+
+    # Start the main event loop
+    root.mainloop()
 
     matrice_iniziale = getStato(immagine_iniziale)
     matrice_finale = getStato(immagine_finale)

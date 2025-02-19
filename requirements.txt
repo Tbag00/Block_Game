@@ -7,3 +7,5 @@ pydot
 seaborn
 opencv
 visualkeras
+pygame
+tkinter
