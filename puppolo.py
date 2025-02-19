@@ -99,8 +99,6 @@ def anima_matrice(matrix1, matrix2, movimenti):
         clock.tick(30)
 
     pygame.quit()
-    sys.exit()
-
 
 '''if __name__ == "__main__":
     size = 6  #np.random.randint(2, 7)
