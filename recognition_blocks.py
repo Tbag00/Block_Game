@@ -50,7 +50,7 @@ def getStato(img: cv.Mat) -> np.array:
         # controllo se la forma e' rettangolare
         if 0.8 < ratio < 2.0:
             # approssimo rettangolo
-            epsilon = 0.14 * cv.arcLength(contour, True)
+            epsilon = 0.05 * cv.arcLength(contour, True)
             approx = cv.approxPolyDP(contour, epsilon, True)
             x, y, w, h = cv.boundingRect(approx)
             print("w: ",w)
