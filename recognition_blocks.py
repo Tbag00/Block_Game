@@ -1,3 +1,5 @@
+from copy import deepcopy
+from os import remove
 import re
 import numpy as np
 import tensorflow as tf
@@ -21,16 +23,74 @@ def recon_number(rect: cv.Mat) -> int:
     # adatto input size
     rect = cv.bitwise_not(rect)
     rect = cv.resize(rect,(28,28))
-    plt.imshow(rect)
-    plt.show()
     predictions = model.predict(np.array([rect]))#.argmax(axis=1)
-    print(predictions)
     predictions[:, 7:] = -np.inf
     predictions[:, 0] = -np.inf
-    print(predictions)
     return predictions.argmax(axis=1)
 
 
+def apply_gravity(matrix) -> np.matrix:
+    """Simula la gravità facendo cadere i numeri verso il basso."""
+    rows, cols = matrix.shape
+    for col in range(cols):
+        non_zero_values = [matrix[row][col] for row in range(rows) if matrix[row][col] != 0]
+        zero_count = rows - len(non_zero_values)
+        matrix[:, col] = [0] * zero_count + non_zero_values  # Riempie con zeri sopra e numeri sotto
+    return matrix
+
+def costruisci_mat(rects: list) -> np.matrix:
+    n = len(rects)
+    """if n > 6:
+        print("tvoppe")
+        return"""
+    mat = np.zeros((n, n), dtype=int)  # Crea una matrice quadrata di zeri
+    
+    col = 0
+    row = 0
+    inseriti = []
+    for rect in rects:
+        if rect not in inseriti:
+            print("rect",rect["value"])
+            row = 0
+            for item in rects:
+                if item not in inseriti:
+                    if rect["x"]-rect["w"]/2.0 <= item["x"] <= rect["x"]+rect["w"]/2.0:
+                        print("item",item["value"])
+                        mat[row][col] = item["value"]
+                        row += 1
+                        inseriti.append(item)
+                    else:
+                        break
+            col += 1
+    print(mat)
+    #mat[row,:] = sorted(mat[row,:], key= lambda val: )
+    y_values = [rect["y"] for rect in rects]
+    print(y_values)
+
+    # Ordinare gli indici in base ai valori di "y"
+    sorted_indices = np.argsort(y_values)
+    print(sorted_indices)
+    
+    # Ordinare le righe della matrice in base all'ordine degli indici "y"
+    mat = mat[sorted_indices, :]
+
+    print(mat)
+    apply_gravity(mat)
+    print(mat)
+    return mat
+    """ for i in range(n):
+        print("rect",rect["value"])
+        row = 0
+        mat[row][col] = rects[i]["value"]
+        for j in range(n):
+                if rects[i]["x"]-rects["w"]/2.0 <= rects[i]["x"] <= rect["x"]+rect["w"]/2.0:
+                    print("item",item["value"])
+                    mat[row][col] = item["value"]
+                    row += 1
+                else:
+                    break
+        col += 1
+            """
 # importo modello e immagine
 model: models.Sequential = models.load_model("recognition_numbers.keras")
 img = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/ombroso.jpeg', cv.IMREAD_GRAYSCALE)
@@ -100,4 +160,6 @@ for rect in rects:
     #cv.waitKey(0)
     rect["value"] = recon_number(rect_img)
     print(rect["value"])
+
+costruisci_mat(rects)
 cv.destroyAllWindows()
