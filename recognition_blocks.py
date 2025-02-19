@@ -10,7 +10,9 @@ import matplotlib.pyplot as plt
 import cv2 as cv
 
 # importo modello
-model: models.Sequential = models.load_model("recognition_numbers.keras")
+model: models.Sequential = models.load_model("/home/tommaso/intelligenzaArtificiale/progetto/Block_Game/recognition_numbers.keras")
+model.predict(test_s)
+exit(0)
 def adjust_gamma(image, gamma):
     inv_gamma = 1.0 / gamma
     table = np.array([(i / 255.0) ** inv_gamma * 255 for i in np.arange(0, 256)]).astype("uint8")
@@ -135,13 +137,14 @@ def recon_number(rect: cv.Mat) -> int:
     # adatto input size
     rect = cv.bitwise_not(rect)
     rect = cv.resize(rect, (28, 28))
+    #unidimensionale = rect.reshape(,28), 28*28)
     cv.imshow("input", rect)
     cv.waitKey(0)
 
+    rect = rect/255
+    print(rect)
     predictions = model.predict(np.array([rect])) 
-    predictions[:, 7:] = -np.inf
-    predictions[:, 0] = -np.inf
-    return predictions.argmax(axis=1)
+    return predictions.argmax(axis=1) + 1
 
 
 # Simula la gravità facendo cadere i numeri verso il basso.
