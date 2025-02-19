@@ -26,7 +26,7 @@ if __name__ == "__main__":
     immagine_iniziale = cv.imread('C:\\Users\\drink\\Downloads\\iniziale.jpeg',cv.IMREAD_GRAYSCALE)
     #immagine_finale = cv.imread('C:\\Users\\drink\\Downloads\\iniziale.jpeg',cv.IMREAD_GRAYSCALE)
     immagine_finale = cv.imread('C:\\Users\\drink\\Downloads\\puppalon.jpeg',cv.IMREAD_GRAYSCALE)"""
-    immagine_inziale: cv.Mat
+    immagine_iniziale: cv.Mat
     immagine_finale: cv.Mat
     # Crea la finestra principale
     root = tk.Tk()
