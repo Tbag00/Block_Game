@@ -3,14 +3,6 @@ import sys
 import numpy as np
 import pygame
 
-#godo
-def generate_unique_matrix(size):
-    values = list(range(1, size + 1))  # Numeri da 1 a N
-    values += [0] * (size * size - size)  # Riempi con 0 gli spazi vuoti
-    random.shuffle(values)
-    return np.array(values).reshape((size, size))
-
-
 def assign_colors():
     return {
         0: (0, 0, 0),  # Nero per spazi vuoti
@@ -120,5 +112,6 @@ if __name__ == "__main__":
     # Esegui dei movimenti sulla matrice1
     movimenti = [(1, 2), (4, 2), (1, 5), (0, 1), (4, 0), (5, 4), (5, 3), (2, 5), (4, 5), (2, 5), (3, 2), (5, 4), (5, 4),
                  (5, 2), (4, 3), (4, 5), (3, 5)]  # Esempio di movimenti: (colonna_sorgente, colonna_destinazione)
+    #movimenti = [(5, 2), (1, 5), (4, 2), (1, 5), (0, 1), (4, 0)]
 
     anima_matrice(matrix1, matrix2, movimenti)

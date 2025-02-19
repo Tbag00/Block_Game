@@ -275,8 +275,45 @@ class Mproblem(Problem):
 
         return distanza
 
+    def euristica_drinkastica(problem, node) -> int: #fa cacare, meglio la relaxed
+        stato_corrente = node.state.m_corrente
+        goal = problem.goal
+        rows, cols = stato_corrente.shape
+        blocchi_dal_goal = 0
+
+        # Creiamo una mappa delle posizioni dei valori nel goal
+        goal_positions = {goal[r, c]: (r, c) for r in range(rows) for c in range(cols)}
+        for c in range(cols):
+            for r in range(rows - 1, -1, -1):  # Dal basso verso l'alto
+                if stato_corrente[r, c] != 0:  # Evitiamo di cercare gli 0
+                    if stato_corrente[r, c] != goal[r, c]:
+                        gr, gc = goal_positions[stato_corrente[r, c]]
+                        if stato_corrente[gr, gc] != 0:
+                            # Se nella nostra matrice abbiamo uno stato goal 'disponibile' siamo felici
+                            # altrimenti contiamo quante azioni serviranno per 'liberare' quel goal
+                            blocchi_dal_goal += 1
+                            for r_sopra in range(gr - 1, rows):
+                                if stato_corrente[r_sopra][gc] != 0:
+                                    blocchi_dal_goal += 1
+                                else:
+                                    break
+                    else:
+                        # Il blocco è nella posizione giusta, ma ha sotto elementi sbagliati?
+                        for r_sotto in range(r + 1, rows):  # Controlliamo sotto
+                            if stato_corrente[r_sotto, c] != goal[r_sotto, c]:
+                                blocchi_dal_goal += 1
+                                break  # Basta un errore sotto per contare il blocco come problematico
+                else: #se troviamo uno zero si puo interrompere, tanto avra solo altri zeri sopra
+                    break
+        #print(blocchi_dal_goal)
+        return blocchi_dal_goal
+
+
+
 
 matrice_inizio = Matrice(matrix_i)
 problemazione = Mproblem(matrice_inizio, matrix_f)
-execute("A-Star euristica subgoal", astar_search, problemazione, problemazione.subgoal_problem)
+#execute("A-Star euristica subgoal", astar_search, problemazione, problemazione.subgoal_problem)
 execute("A-Star euristica subgoal pesata", astar_search, problemazione, problemazione.weighted_subgoal)
+execute("A-Star euristica ammissibile", astar_search, problemazione, problemazione.relaxed_problem)
+execute("A-Star drink ti amo", astar_search, problemazione, problemazione.euristica_drinkastica)

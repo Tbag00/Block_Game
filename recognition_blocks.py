@@ -163,3 +163,51 @@ for rect in rects:
 
 costruisci_mat(rects)
 cv.destroyAllWindows()
+
+#drinkodice
+
+'''import numpy as np
+
+def costruisci_mat(rects, n):
+    """Costruisce una matrice nxn ordinata per x (colonna) e y (altezza)."""
+
+    tolleranza_x = 10  # Permette di raggruppare x simili
+    colonne = {}
+
+    # Raggruppamento per x
+    for rect in rects:
+        x = rect["x"]
+        trovato = False
+
+        for key in colonne.keys():
+            if abs(key - x) < tolleranza_x:
+                colonne[key].append(rect)
+                trovato = True
+                break
+
+        if not trovato:
+            colonne[x] = [rect]
+
+    # Ordina le colonne per x
+    colonne_ordinate = sorted(colonne.items(), key=lambda item: item[0])
+
+    # Costruisce la matrice
+    matrice = []
+    for _, col in colonne_ordinate:
+        col.sort(key=lambda rect: rect["y"])  # Ordina per y (dall'alto in basso)
+        matrice.append([rect["value"] for rect in col])
+
+    # Rende la matrice n x n
+    while len(matrice) < n:  # Se ci sono meno di n colonne, aggiunge colonne vuote
+        matrice.append([])
+
+    for col in matrice:
+        while len(col) < n:  # Se una colonna ha meno di n righe, riempie con 0
+            col.append(0)
+
+    # Converte in array NumPy per facilitare l'uso
+    mat_np = np.array(matrice).T  # Trasposta per ottenere la forma corretta
+
+    print(mat_np)
+    return mat_np
+'''
