@@ -11,17 +11,29 @@ import cv2 as cv
 
 # importo modello
 model: models.Sequential = models.load_model("recognition_numbers.keras")
-
+def adjust_gamma(image, gamma):
+    inv_gamma = 1.0 / gamma
+    table = np.array([(i / 255.0) ** inv_gamma * 255 for i in np.arange(0, 256)]).astype("uint8")
+    return cv.LUT(image, table)
 
 def getStato(img: cv.Mat) -> np.array:
     assert img is not None, "file could not be read, check with os.path.exists()"
     #img = cv.resize(img, (1024, 512))
     larghezza_img = img.shape[1]
     altezza_img = img.shape[0]
-
+    print("larghezza:", larghezza_img)
+    print("altezza:", altezza_img)
+    img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    img = adjust_gamma(img, gamma=1.7) # schiarisce immagine
+    kernel = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
+    img = cv.morphologyEx(img, cv.MORPH_CLOSE, kernel, iterations=2)
     img = cv.normalize(
         img, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
     (thresh, img) = cv.threshold(img, 128, 255, cv.THRESH_BINARY | cv.ADAPTIVE_THRESH_GAUSSIAN_C)
+    
+    cv.imshow("test", img)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
 
     # decommenta se usi caussiana poché inverte i colori quindi li inverto
     img = cv.bitwise_not(img)
@@ -40,16 +52,25 @@ def getStato(img: cv.Mat) -> np.array:
             # approssimo rettangolo
             epsilon = 0.14 * cv.arcLength(contour, True)
             approx = cv.approxPolyDP(contour, epsilon, True)
+            x, y, w, h = cv.boundingRect(approx)
+            print("w: ",w)
+            print("h: ", h)
+            print("lati:", len(approx))
+            cv.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 10)
+            cv.imshow("test2", img)
+            cv.waitKey(0)
 
             # controllo che contour sia rettangolo
             if len(approx) == 4:
                 x, y, w, h = cv.boundingRect(approx)
+                print("w: ",w)
+                print("h: ", h)
+                cv.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 10)
+                cv.imshow("test2", img)
+                cv.waitKey(0)
 
                 # salvo rettangoli con dimensioni limitate
-                if w > (larghezza_img / 12.0) and h > (altezza_img / 12.0) and w < (larghezza_img / 2.0) and h < (altezza_img / 2.0):
-                    cv.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 10)
-                    cv.imshow("test2", img)
-                    cv.waitKey(0)
+                if w > (larghezza_img / 16.0) and h > (altezza_img / 16.0) and w < (larghezza_img / 4.0) and h < (altezza_img / 4.0):
                     rects.append({
                         "x": x, "y": y, "w": w, "h": h, "value": 0
                     })

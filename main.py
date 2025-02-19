@@ -1,3 +1,4 @@
+from os import wait
 import cv2 as cv
 from aima import astar_search
 from prova import Mproblem, Matrice, execute
@@ -10,7 +11,11 @@ from tkinter import filedialog
 
 # Apri la finestra di dialogo per selezionare un'immagine
 def upload_image(is_iniziale: bool):
-    file_path = filedialog.askopenfilename(title="Seleziona un'immagine", filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.bmp;*.tiff")])
+    file_path = filedialog.askopenfilename(
+        title="Seleziona un'immagine", 
+        filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.bmp;*.tiff"), ("All Files", "*.*")]
+    )
+    
     
     if file_path:
         # Carica l'immagine con OpenCV
@@ -31,7 +36,7 @@ if __name__ == "__main__":
     immagine_iniziale = cv.imread('C:\\Users\\drink\\Downloads\\iniziale.jpeg',cv.IMREAD_GRAYSCALE)
     #immagine_finale = cv.imread('C:\\Users\\drink\\Downloads\\iniziale.jpeg',cv.IMREAD_GRAYSCALE)
     immagine_finale = cv.imread('C:\\Users\\drink\\Downloads\\puppalon.jpeg',cv.IMREAD_GRAYSCALE)"""
-    immagine_iniziale: cv.Mat = None
+    '''immagine_iniziale: cv.Mat = None
     immagine_finale: cv.Mat = None
     # Crea la finestra principale
     root = tk.Tk()
@@ -50,6 +55,13 @@ if __name__ == "__main__":
     # Start the main event loop
     root.mainloop()
 
+    cv.imshow("iniziale",immagine_iniziale)
+    cv.waitKey(0)
+    cv.imshow("finale", immagine_finale)
+    cv.waitKey(0)
+    cv.destroyAllWindows()'''
+    immagine_iniziale = cv.imread("/home/tommaso/Downloads/iniziale.jpeg")
+    immagine_finale = cv.imread("/home/tommaso/Downloads/finale.jpeg")
     matrice_iniziale = getStato(immagine_iniziale)
     matrice_finale = getStato(immagine_finale)
     print(matrice_iniziale)
