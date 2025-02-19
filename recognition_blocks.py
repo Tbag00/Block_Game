@@ -9,49 +9,70 @@ from keras import datasets, models, layers, callbacks
 import matplotlib.pyplot as plt
 import cv2 as cv
 
-def costruisci_mat1(rects, n):
-    """Costruisce una matrice nxn ordinata per x (colonna) e y (altezza)."""
+# importo modello
+model: models.Sequential = models.load_model("recognition_numbers.keras")
 
-    tolleranza_x = 10  # Permette di raggruppare x simili
-    colonne = {}
+def getStato(img: cv.Mat) -> np.array:
+    assert img is not None, "file could not be read, check with os.path.exists()"
+    larghezza_img = img.shape[1]
+    altezza_img = img.shape[0]
 
-    # Raggruppamento per x
-    for rect in rects:
-        x = rect["x"]
-        trovato = False
+    img = cv.normalize(
+        img, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
+    (thresh, img) = cv.threshold(img, 128, 255, cv.THRESH_BINARY | cv.ADAPTIVE_THRESH_GAUSSIAN_C)
 
-        for key in colonne.keys():
-            if abs(key - x) < tolleranza_x:
-                colonne[key].append(rect)
-                trovato = True
-                break
+    # decommenta se usi caussiana poché inverte i colori quindi li inverto
+    img = cv.bitwise_not(img)
 
-        if not trovato:
-            colonne[x] = [rect]
+    # lista contenente i rettangoli
+    # i rettangoli sono dizionari codificati dall' angolo in alto a sinistra (x,y) dalla base w e altezza h
+    rects = []
+    contours, hierarchy = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
-    # Ordina le colonne per x
-    colonne_ordinate = sorted(colonne.items(), key=lambda item: item[0])
+    for contour in contours:
+        x,y,w,h = cv.boundingRect(contour)
+        ratio = w/float(h)
 
-    # Costruisce la matrice
-    matrice = []
-    for _, col in colonne_ordinate:
-        col.sort(key=lambda rect: rect["y"])  # Ordina per y (dall'alto in basso)
-        matrice.append([rect["value"] for rect in col])
+        # controllo se la forma e' rettangolare
+        if 0.8 < ratio < 2.0:
+            # approssimo rettangolo
+            epsilon = 0.14*cv.arcLength(contour,True)
+            approx = cv.approxPolyDP(contour,epsilon,True)
 
-    # Rende la matrice n x n
-    while len(matrice) < n:  # Se ci sono meno di n colonne, aggiunge colonne vuote
-        matrice.append([])
+            # controllo che contour sia rettangolo
+            if len(approx) == 4:
+                x,y,w,h = cv.boundingRect(approx)
 
-    for col in matrice:
-        while len(col) < n:  # Se una colonna ha meno di n righe, riempie con 0
-            col.append(0)
+                # salvo rettangoli con dimensioni limitate
+                if w > (larghezza_img / 12) and h > (altezza_img / 12) and w < (larghezza_img / 4) and h < (altezza_img / 4):
+                    cv.rectangle(img, (x,y), (x+w,y+h),(255,0,0),10)
+                    cv.imshow("test2", img)
+                    cv.waitKey(0)
+                    rects.append({
+                        "x":x, "y":y, "w":w, "h":h, "value":0
+                    })
 
-    # Converte in array NumPy per facilitare l'uso
-    mat_np = np.array(matrice).T  # Trasposta per ottenere la forma corretta
+    # ordino i rettangoli da sinistra a destra
+    rects = sorted(rects, key= lambda r:r["x"])
 
-    print(mat_np)
-    apply_gravity(mat_np)
-    return mat_np
+    # escludo rettangoli esterni
+    inner_recs = copy.deepcopy(rects)
+    for rectExt in rects:
+        exterior = False
+        for rectInt in rects:
+            if inside(rectExt, rectInt) and not rectExt is rectInt:
+                print("removed rectangle: %s" %rectExt["x"])
+                exterior = True
+        if exterior == False:
+            inner_recs.append(rectExt)
+
+    for rect in inner_recs:
+        rect_img = img[rect["y"]+10:rect["y"]+rect["h"]-10, rect["x"]+10:rect["x"]+rect["w"]-10]
+        rect["value"] = recon_number(rect_img)
+        print(rect["value"])
+    
+    return costruisci_mat(rects)
+
 
 # controlla se rettangolo 1 contiene rettangolo 2
 def inside(rectExt: dict, rectInt: dict) -> bool:
@@ -118,9 +139,7 @@ def costruisci_mat(rects: list) -> np.matrix:
 
 
 
-# importo modello e immagine
-model: models.Sequential = models.load_model("recognition_numbers.keras")
-img = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/img_ultrahd.jpeg', cv.IMREAD_GRAYSCALE)
+i#mg = cv.imread('/home/tommaso/intelligenzaArtificiale/progetto/test_personali_blocks/img_ultrahd.jpeg', cv.IMREAD_GRAYSCALE)
 #img = cv.resize(img, (1024, 512))
 assert img is not None, "file could not be read, check with os.path.exists()"
 larghezza_img = img.shape[1]
