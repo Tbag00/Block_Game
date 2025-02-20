@@ -68,15 +68,14 @@ def confirm_images():
 
     problemazione = Mproblem(Matrice(matrice_iniziale), matrice_finale)
     
-    soluzione2 = execute("A-Star euristica relaxed", astar_search, problemazione, problemazione.posti_sbagliati)
-    anima_matrice(matrice_iniziale, matrice_finale, soluzione2)
-
-    soluzione1 = execute("A-Star euristica subgoal", astar_search, problemazione, problemazione.posti_sbagliati_piu_giusti_sopra)
-    anima_matrice(matrice_iniziale, matrice_finale, soluzione1)
+    soluzione2  = execute("A-Star euristica veloce", astar_search, problemazione, problemazione.posti_sbagliati_piu_giusti_sopra_piu_costo_sol)
+    anima_matrice(matrice_iniziale, matrice_finale, soluzione2.solution())
     
-    soluzione3 = execute("A-Star euristica relaxed pesata", astar_search, problemazione, problemazione.posti_sbagliati_piu_giusti_sopra_piu_costo_sol)
-    anima_matrice(matrice_iniziale, matrice_finale, soluzione3)
-
+    soluzione3  = execute("A-Star euristica relaxed pesata", astar_search, problemazione, problemazione.posti_sbagliati_piu_giusti_sopra)
+    anima_matrice(matrice_iniziale, matrice_finale, soluzione3.solution())  
+    
+    soluzione1 = execute("A-Star euristica relaxed", astar_search, problemazione, problemazione.posti_sbagliati)
+    anima_matrice(matrice_iniziale, matrice_finale, soluzione1.solution()) 
     messagebox.showinfo("Completato", "Le immagini sono state processate con successo!")
 
 # Funzione di chiusura
