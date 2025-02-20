@@ -120,13 +120,13 @@ def getStato(original_img: cv.Mat) -> np.array:
 
     for rect in inner_recs:
         rect_img = original_img[rect["y"] + 5 :rect["y"] + rect["h"] - 5, rect["x"] + 5 :rect["x"] + rect["w"] - 5]
-        cv.imshow("rettangolo",rect_img)
-        cv.waitKey(0)
+        # cv.imshow("rettangolo",rect_img)
+        # cv.waitKey(0)
 
         rect["value"] = recon_number(rect_img)
         print(rect["value"])
     print("ho rilevato %s blocchi" %len(inner_recs))
-    cv.destroyAllWindows()
+    #cv.destroyAllWindows()
     return costruisci_mat(inner_recs)
 
 # controlla se rettangolo 1 contiene rettangolo 2
@@ -150,8 +150,8 @@ def recon_number(rect: cv.Mat) -> int:
     #     rect, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
     (thresh1, rect) = cv.threshold(rect, 127, 255, cv.THRESH_TOZERO)
     
-    plt.imshow(rect)
-    plt.show()
+    # plt.imshow(rect)
+    # plt.show()
     rect = rect/255
 
     print(rect)

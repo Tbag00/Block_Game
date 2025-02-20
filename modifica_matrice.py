@@ -71,8 +71,8 @@ def edit_matrix(matrix):
 
 
 # Esempio di utilizzo
-if __name__ == "__main__":
-    initial_matrix = np.zeros((3, 3), dtype=int)
-    updated_matrix = edit_matrix(initial_matrix)
-    print("Matrice aggiornata:")
-    print(updated_matrix)
+#if __name__ == "__main__":
+# initial_matrix = np.zeros((3, 3), dtype=int)
+# updated_matrix = edit_matrix(initial_matrix)
+# print("Matrice aggiornata:")
+# print(updated_matrix)

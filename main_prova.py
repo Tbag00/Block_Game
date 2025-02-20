@@ -8,6 +8,7 @@ from aima import astar_search
 from prova import Mproblem, Matrice, execute
 from puppolo import anima_matrice
 import cv2 as cv
+from modifica_matrice import edit_matrix
 
 # Funzione per caricare l'immagine
 def upload_image(is_iniziale: bool):
@@ -57,14 +58,23 @@ def confirm_images():
     print("matrice finale:")
     print(matrice_finale)
 
+    matrice_iniziale = edit_matrix(matrice_iniziale)
+    matrice_finale = edit_matrix(matrice_finale)
+
+    print("matrice iniziale:")
+    print(matrice_iniziale)
+    print("matrice finale:")
+    print(matrice_finale)
+
     problemazione = Mproblem(Matrice(matrice_iniziale), matrice_finale)
-    soluzione1 = execute("A-Star euristica subgoal", astar_search, problemazione, problemazione.subgoal_problem)
+    
+    soluzione2 = execute("A-Star euristica relaxed", astar_search, problemazione, problemazione.posti_sbagliati)
+    anima_matrice(matrice_iniziale, matrice_finale, soluzione2)
+
+    soluzione1 = execute("A-Star euristica subgoal", astar_search, problemazione, problemazione.posti_sbagliati_piu_giusti_sopra)
     anima_matrice(matrice_iniziale, matrice_finale, soluzione1)
     
-    soluzione2 = execute("A-Star euristica relaxed", astar_search, problemazione, problemazione.relaxed_problem)
-    anima_matrice(matrice_iniziale, matrice_finale, soluzione2)
-    
-    soluzione3 = execute("A-Star euristica relaxed pesata", astar_search, problemazione, problemazione.weighted_relax)
+    soluzione3 = execute("A-Star euristica relaxed pesata", astar_search, problemazione, problemazione.posti_sbagliati_piu_giusti_sopra_piu_costo_sol)
     anima_matrice(matrice_iniziale, matrice_finale, soluzione3)
 
     messagebox.showinfo("Completato", "Le immagini sono state processate con successo!")

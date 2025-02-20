@@ -374,20 +374,20 @@ class Mproblem(Problem):
         return blocchi_dal_goal
 
 
-matrice_inizio = np.array(
-    [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 6, 0],
-     [2, 5, 0, 0, 3, 4]])
-matrice_fine = np.array([[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 6, 0, 0, 5],
-                     [3, 2, 4, 0, 0, 1]])
+# matrice_inizio = np.array(
+#     [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 6, 0],
+#      [2, 5, 0, 0, 3, 4]])
+# matrice_fine = np.array([[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 6, 0, 0, 5],
+#                      [3, 2, 4, 0, 0, 1]])
 
-# Esegui dei movimenti sulla matrice1
-movimenti = [(1, 2), (4, 2), (1, 5), (0, 1), (4, 0), (5, 4), (5, 3), (2, 5), (4, 5), (2, 5), (3, 2), (5, 4), (5, 4),
-             (5, 2), (4, 3), (4, 5), (3, 5)]  # Esempio di movimenti: (colonna_sorgente, colonna_destinazione)
+# # Esegui dei movimenti sulla matrice1
+# movimenti = [(1, 2), (4, 2), (1, 5), (0, 1), (4, 0), (5, 4), (5, 3), (2, 5), (4, 5), (2, 5), (3, 2), (5, 4), (5, 4),
+#              (5, 2), (4, 3), (4, 5), (3, 5)]  # Esempio di movimenti: (colonna_sorgente, colonna_destinazione)
 
-problemazione = Mproblem(Matrice(matrix_i), matrix_f)
-s1 = execute("A-Star euristica posti posti sbagliati + giusti da spostare", astar_search, problemazione, problemazione.posti_sbagliati_piu_giusti_sopra)
-s2 = execute("A-Star euristica posti sbagliati + giusti da spostare + sol", astar_search, problemazione, problemazione.posti_sbagliati_piu_giusti_sopra_piu_costo_sol)
-print(s1.path_cost, "   ", s2.path_cost)
+# problemazione = Mproblem(Matrice(matrix_i), matrix_f)
+# s1 = execute("A-Star euristica posti posti sbagliati + giusti da spostare", astar_search, problemazione, problemazione.posti_sbagliati_piu_giusti_sopra)
+# s2 = execute("A-Star euristica posti sbagliati + giusti da spostare + sol", astar_search, problemazione, problemazione.posti_sbagliati_piu_giusti_sopra_piu_costo_sol)
+# print(s1.path_cost, "   ", s2.path_cost)
 #execute("A-Star euristica subgoal", astar_search, problemazione, problemazione.subgoal_problem)
 #execute("A-Star euristica relax pesata", astar_search, problemazione, problemazione.weighted_relax)
 #execute("A-Star euristica manhattan", astar_search, problemazione, problemazione.manhattan_distance)
