@@ -32,37 +32,3 @@ plt.tight_layout()
 plt.savefig("Accuracy_Loss_CNN")
 plt.show()
 
-
-def visualize_features_map(im: np.ndarray, layer_index: int):
-
-    # NOTE: You can get the model by its name, but consider that the names assigned change if you re-run the code. It's better to select the layer using the list index
-    model_v = keras.Model(inputs = model.inputs[0], outputs = model.layers[layer_index].output)
-    model_v.summary()
-
-    # Get the feature maps
-    feature_maps = model_v.predict(np.array([im]), verbose=False)[0]
-
-    # Print the shape of feature_maps
-    print("Feature maps shape:", feature_maps.shape)
-
-    # Predict class name
-    p = model.predict(np.array([im]), verbose=False)
-    print("Image class name:", class_names[np.argmax(p)])
-
-    # Show the image for which we want to compute the feature maps and its class
-    plt.imshow(im)
-    plt.show()
-
-    # Show the feature map corresponding to a given filter as an image
-    fmap=feature_maps[:,:,5]
-
-    plt.imshow(fmap, cmap="gray")
-    plt.show()
-
-    # Show all the feature maps
-    fig  = plt.figure(figsize=(10, 10))
-    for i in range(feature_maps.shape[2]):
-        sub = fig.add_subplot(8, 8, i+1)
-        plt.xticks([])
-        plt.yticks([])
-        sub.imshow(feature_maps[:,:,i], cmap = "gray")

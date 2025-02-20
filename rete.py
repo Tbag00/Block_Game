@@ -6,6 +6,40 @@ import matplotlib.pyplot as plt
 import visualkeras
 from contextlib import redirect_stdout
 
+def visualize_features_map(im: np.ndarray, layer_index: int):
+
+    # NOTE: You can get the model by its name, but consider that the names assigned change if you re-run the code. It's better to select the layer using the list index
+    model_v = keras.Model(inputs = model.inputs[0], outputs = model.layers[layer_index].output)
+    model_v.summary()
+
+    # Get the feature maps
+    feature_maps = model_v.predict(np.array([im]), verbose=False)[0]
+
+    # Print the shape of feature_maps
+    print("Feature maps shape:", feature_maps.shape)
+
+    # Predict class name
+    p = model.predict(np.array([im]), verbose=False).argmax(axis=1)
+    print("Image class name:", p)
+
+    # Show the image for which we want to compute the feature maps and its class
+    plt.imshow(im)
+    plt.show()
+
+    # Show the feature map corresponding to a given filter as an image
+    fmap=feature_maps[:,:,5]
+
+    plt.imshow(fmap, cmap="gray")
+    plt.show()
+
+    # Show all the feature maps
+    fig  = plt.figure(figsize=(10, 10))
+    for i in range(feature_maps.shape[2]):
+        sub = fig.add_subplot(8, 8, i+1)
+        plt.xticks([])
+        plt.yticks([])
+        sub.imshow(feature_maps[:,:,i], cmap = "gray")
+
 # scarico dataset
 (train_images, train_labels), (test_images, test_labels) = datasets.mnist.load_data()
 
@@ -36,6 +70,7 @@ with open('rete_summary.txt', 'w') as f:
         model.summary()
 
 # Compile the model
+batch_size = 128
 model.compile(
     optimizer='adam',
     loss='sparse_categorical_crossentropy', 
@@ -46,7 +81,7 @@ model.compile(
 early_stopping = callbacks.EarlyStopping(monitor='val_loss', min_delta=0.1, patience=5, verbose=1, mode='min')
 
 # Model training
-history = model.fit(train_images, train_labels, epochs=15, validation_split=0.1, callbacks=[early_stopping])
+history = model.fit(train_images, train_labels, batch_size=batch_size, epochs=15, validation_split=0.1, callbacks=[early_stopping])
 
 # Degine a subplot grid 1x2
 plt.figure(figsize=(12, 6))

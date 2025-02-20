@@ -21,8 +21,8 @@ The kernel size determines how much of the image you want affecting the output o
 
 The Inception Architecture takes these decisions out of the hand of the modeller as it lumps filters of different kernel size together and let the model learn the best ones to use."""
 
-(train_images, train_labels), (test_images, test_labels) = datasets.mnist.load_data()
-
+(train_images, train_labels), (test_images, test_labels) = datasets.cifar10.load_data()
+"""
 # tolgo label di numeri non necessari
 filtro_train = (train_labels>0) & (train_labels <7)
 filtro_test = (test_labels>0) & (test_labels <7)
@@ -38,8 +38,7 @@ train_images= train_images/255
 test_images= test_images/255
 
 model: models.Sequential = models.load_model("/home/tommaso/intelligenzaArtificiale/progetto/Block_Game/recognition_numbers.keras")
-predicted = model.predict(test_images).argmax(axis=1)
-print(accuracy_score(test_labels, predicted))
+predicted = model.predict(test_images).argmax(axis=1) + 1
 
 exit(0)
 print(train_labels[:100])
@@ -49,7 +48,7 @@ print(labels)
 # stampa shape training images
 print(train_images.shape)
 # stampa alcune training images
-""" plt.figure(figsize=(10,10))
+plt.figure(figsize=(10,10))
 for i,image in enumerate(train_images[0:25]):
     plt.subplot(5,5,i+1)
     plt.xticks([])
@@ -64,7 +63,7 @@ test_images= test_images/255
 
 #definisco CNN
 model = models.Sequential([
-    layers.Input(shape=(28,28,1)),
+    layers.Input(shape=(32,32,3)),
     layers.Conv2D(64, (3, 3), activation='relu'),
     layers.MaxPooling2D((2, 2)),
     # layers.Dropout(0.3),
@@ -72,7 +71,7 @@ model = models.Sequential([
     # layers.MaxPooling2D((2,2)),
     # layers.Dense(64, activation='relu'),
     layers.Flatten(),
-    layers.Dense(len(labels), activation='softmax')
+    layers.Dense(10, activation='softmax')
 ])
 # stampo e salvo model summary
 model.summary()
@@ -121,38 +120,3 @@ plt.legend(loc='upper right')
 plt.tight_layout()
 plt.savefig("Accuracy_Loss_CNN")
 plt.show()
-
-
-def visualize_features_map(im: np.ndarray, layer_index: int):
-
-    # NOTE: You can get the model by its name, but consider that the names assigned change if you re-run the code. It's better to select the layer using the list index
-    model_v = keras.Model(inputs = model.inputs[0], outputs = model.layers[layer_index].output)
-    model_v.summary()
-
-    # Get the feature maps
-    feature_maps = model_v.predict(np.array([im]), verbose=False)[0]
-
-    # Print the shape of feature_maps
-    print("Feature maps shape:", feature_maps.shape)
-
-    # Predict class name
-    p = model.predict(np.array([im]), verbose=False)
-    print("Image class name:", class_names[np.argmax(p)])
-
-    # Show the image for which we want to compute the feature maps and its class
-    plt.imshow(im)
-    plt.show()
-
-    # Show the feature map corresponding to a given filter as an image
-    fmap=feature_maps[:,:,5]
-
-    plt.imshow(fmap, cmap="gray")
-    plt.show()
-
-    # Show all the feature maps
-    fig  = plt.figure(figsize=(10, 10))
-    for i in range(feature_maps.shape[2]):
-        sub = fig.add_subplot(8, 8, i+1)
-        plt.xticks([])
-        plt.yticks([])
-        sub.imshow(feature_maps[:,:,i], cmap = "gray")
