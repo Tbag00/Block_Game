@@ -20,7 +20,7 @@ import cv2 as cv
 
 # exit(0)
 # importo modello
-model: models.Sequential = models.load_model("/home/tommaso/intelligenzaArtificiale/progetto/Block_Game/recognition_numbers.keras")
+model: models.Sequential = models.load_model("recognition_numbers.keras")
 def adjust_gamma(image, gamma):
     inv_gamma = 1.0 / gamma
     table = np.array([(i / 255.0) ** inv_gamma * 255 for i in np.arange(0, 256)]).astype("uint8")
