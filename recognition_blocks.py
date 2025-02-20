@@ -148,6 +148,7 @@ def recon_number(rect: cv.Mat) -> int:
     rect = cv.cvtColor(rect, cv.COLOR_BGR2GRAY) # scala grigi
     # rect = cv.normalize(
     #     rect, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
+    (thresh1, rect) = cv.threshold(rect, 127, 255, cv.THRESH_TOZERO)
     
     plt.imshow(rect)
     plt.show()

@@ -32,7 +32,6 @@ def on_close():
 
 if __name__ == "__main__":
     
-    """
     immagine_iniziale: cv.Mat = None
     immagine_finale: cv.Mat = None
     # Crea la finestra principale
@@ -57,9 +56,8 @@ if __name__ == "__main__":
     cv.imshow("finale", immagine_finale)
     cv.waitKey(0)
     cv.destroyAllWindows()
-    """
-    immagine_iniziale = cv.imread("/home/tommaso/intelligenzaArtificiale/progetto/Block_Game/immagini_stati/pennarello.jpeg")
-    immagine_finale = cv.imread("/home/tommaso/intelligenzaArtificiale/progetto/Block_Game/immagini_stati/pennarello2.jpeg")
+    # immagine_iniziale = cv.imread("/home/tommaso/intelligenzaArtificiale/progetto/Block_Game/immagini_stati/storto.jpeg")
+    # immagine_finale = cv.imread("/home/tommaso/intelligenzaArtificiale/progetto/Block_Game/immagini_stati/mosso.jpeg")
     matrice_iniziale = getStato(immagine_iniziale)
     matrice_finale = getStato(immagine_finale)
     print("matrice iniziale:")
