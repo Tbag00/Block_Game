@@ -18,16 +18,16 @@ RED = "\033[31;1m"
 GREEN = "\033[32;1m"
 RESET = "\033[0m"
 
-'''def apply_gravity(matrix):
+def apply_gravity(matrix):
     """Simula la gravità facendo cadere i numeri verso il basso."""
     rows, cols = matrix.shape
     for col in range(cols):
         non_zero_values = [matrix[row][col] for row in range(rows) if matrix[row][col] != 0]
         zero_count = rows - len(non_zero_values)
         matrix[:, col] = [0] * zero_count + non_zero_values  # Riempie con zeri sopra e numeri sotto
-    return matrix'''
+    return matrix
 
-'''def generate_matrix():
+def generate_matrix():
     num_elements = 6  # Numero casuale di elementi unici tra 1 e 6
     numbers = random.sample(range(1, num_elements + 1), num_elements)  # Genera numeri unici
 
@@ -38,14 +38,14 @@ RESET = "\033[0m"
         row, col = divmod(pos, num_elements)
         matrix[row][col] = num  # Inserisce un numero unico tra 1 e 6
 
-    return apply_gravity(matrix)'''
+    return apply_gravity(matrix)
 
-'''matrix_i = generate_matrix()
+matrix_i = generate_matrix()
 matrix_f = generate_matrix()
 
-print(matrix_i)  #16 a 9
-print(matrix_f)
-'''
+'''print(matrix_i)  #16 a 9
+print(matrix_f)'''
+
 
 
 def prova(state: np.ndarray) -> list[tuple[int, int]]:
@@ -109,7 +109,7 @@ def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs):
         print(f"{GREEN}Path Cost:{RESET} {sol.path_cost}")
         print(f"{GREEN}Path Length:{RESET} {sol.depth}")
     print(f"{GREEN}Time:{RESET} {end - start} s")
-    return sol.solution()
+    return sol
 
 
 class Matrice:
@@ -165,19 +165,72 @@ class Mproblem(Problem):
     def goal_test(self, state: Matrice) -> bool:
         return np.array_equal(state.m_corrente, self.goal)
 
-    def relaxed_problem(problem, node) -> int:  #ammissibile
+    def posti_sbagliati(problem, node) -> int: #ammissibile ma poco rappresentativa
+        # l'euristica conta i blocchi nella posizione sbagliata
         return np.sum(node.state.m_corrente != problem.goal)
 
-    def weighted_relax(problem,
-                       node) -> int:  #:TODO ammissibile ma da testare, controllate che i commenti abbiano senso
+    def posti_sbagliati_piu_giusti_sopra(problem, node) -> int: #ammissibile e meglio della relax, non buona in tempo
+        # l'euristica conta i blocchi sbagliati più i blocchi sopra, a prescindere che siano giusti o sbagliati
+        corrente = node.state.m_corrente
+        rows, cols = corrente.shape
+        goal = problem.goal
+        errore = 0
+
+        for c in range(0, cols):
+            for r in range(rows - 1, -1, -1):
+                if corrente [r][c] != goal[r][c]:
+                    errore += 1
+                    for r_sopra in range(r - 1, -1, -1):  # controlliamo sopra
+                        if corrente[r_sopra][c] != 0:
+                            errore += 1
+                        else:
+                            break
+                    break
+        return errore
+
+    def posti_sbagliati_piu_giusti_sopra_piu_costo_sol(problem, node) -> int:
+        corrente = node.state.m_corrente
+        rows, cols = corrente.shape
+        goal = problem.goal
+        goal_positions = {goal[r, c]: (r, c) for r in range(goal.shape[0]) for c in range(goal.shape[1])}
+        errore = 0
+
+        for c in range(0, cols):
+            for r in range(rows - 1, -1, -1):
+                if corrente[r][c] != goal[r][c]:
+                    errore += 1
+                    for r_sopra in range(r - 1, -1, -1):  # controlliamo sopra
+                        if corrente[r_sopra][c] != 0:
+                            errore += 1
+                        else:
+                            break
+
+                    #calcoliamo il costo della soluzione
+                    gr, gc = goal_positions[corrente[r, c]]
+                    if gc == c: # sono nella stessa colonna
+                        if (gr > r): #la soluzione si troverebbe sotto alla riga
+                            errore += gr - r + 1# quindi il costo
+                        else:
+                            errore += r - gr + 1
+                    else:
+                        for r_sopra in range(gr, -1, -1):  # controlliamo sopra
+                            if corrente[r_sopra][gc] != 0:
+                                errore += 1
+                            else:
+                                break
+                    break
+        return errore
+
+
+    def weighted_relax(problem, node) -> int:  #:TODO non ammissibile
         stato_corrente = node.state.m_corrente
         rows, cols = stato_corrente.shape
         goal = problem.goal
 
         errore_totale = 0
 
-        for c in range(0, cols):
-            for r in range(rows - 1, -1, -1):  # Dal basso verso l'alto
+        for r in range(rows - 1, -1, -1):  # Dal basso verso l'alto
+            for c in range(0, cols):
                 valore = node.state.m_corrente[r, c]
                 goal_valore = goal[r, c]
                 if valore != goal_valore:  # se il valore è sbagliato il numero di azioni per metterlo al posto giusto
@@ -185,13 +238,15 @@ class Mproblem(Problem):
                     errore_totale += r  # i pesi vengono assegnati in base alla riga, si suggerisce che più si è in alto
                     # più si è 'accessibili' quindi leggeri
                     for r_sopra in range(r - 1, 0):  # controlliamo sopra
-                        if node.state.m_corrente[r_sopra][c] != 0:
+                        if node.state.m_corrente[r_sopra][c] == goal[r, c]:
                             errore_totale += r_sopra
                         else:
                             break
                 elif valore == 0:
                     break
         return errore_totale
+
+
 
     def subgoal_problem(problem, node) -> int:  #:TODO ammissibile ma da testare, sburro fortissimo
         """
@@ -202,9 +257,8 @@ class Mproblem(Problem):
         current_matrix = node.state.m_corrente
         rows, cols = current_matrix.shape
         score = 0
-
-        for r in range(rows - 1, -1, -1):  # Dal basso verso l'alto
-            for c in range(cols):
+        for c in range(cols):
+            for r in range(rows - 1, -1, -1):  # Dal basso verso l'alto
                 if current_matrix[r][c] != goal_matrix[r][c]:
                     score += cols - c  # Penalità ponderata per colonna
                 elif current_matrix[r][c] == 0:
@@ -212,31 +266,79 @@ class Mproblem(Problem):
             if score > 0: break
 
         # il subgoal deve essere messo in funzione della relax, altrimenti diventa poco rappresentativo
-        return np.sum(node.state.m_corrente != problem.goal) * score
+        return score*np.sum(node.state.m_corrente != problem.goal)
+
+    def weighted_subgoal(problem, node) -> int:
+        goal_matrix = problem.goal
+        stato_corrente = node.state.m_corrente
+        rows, cols = stato_corrente.shape
+        score = 0
+
+        for c in range(cols):
+            col_weight = (cols - c)  # Peso più alto per le prime colonne
+            for r in range(rows - 1, -1, -1):  # Dal basso verso l'alto
+                if stato_corrente[r][c] != goal_matrix[r][c]:
+                    score += col_weight  # Penalità ponderata per colonna
+                else:
+                    # Il blocco è nella posizione giusta, ma ha sotto elementi sbagliati?
+                    for r_sotto in range(r + 1, rows):  # Controlliamo sotto
+                        if stato_corrente[r_sotto, c] != goal_matrix[r_sotto, c]:
+                            score += 1
+                            break  # Basta un errore sotto per contare il blocco come problematico
+
+        return score
+
+
+    def heavy_weighted_subgoal(problem, node) -> int:
+        goal_matrix = problem.goal
+        stato_corrente = node.state.m_corrente
+        rows, cols = stato_corrente.shape
+        score = 0
+
+        for c in range(cols):
+            col_weight = (cols - c)  # Peso più alto per le prime colonne
+            for r in range(rows - 1, -1, -1):  # Dal basso verso l'alto
+                if stato_corrente[r][c] != goal_matrix[r][c]:
+                    peso = 1
+                    for r_sopra in range(r - 1, rows):  # controlliamo sopra
+                        if stato_corrente[r_sopra][c] != 0:
+                            peso += 1
+                        else:
+                            score += col_weight * peso  # Penalità ponderata per colonna
+                            break
+                else:
+                    # Il blocco è nella posizione giusta, ma ha sotto elementi sbagliati?
+                    for r_sotto in range(r + 1, rows):  # Controlliamo sotto
+                        if stato_corrente[r_sotto, c] != goal_matrix[r_sotto, c]:
+                            score += (rows - r_sotto) * col_weight
+                            break  # Basta un errore sotto per contare il blocco come problematico
+
+        return score
+
 
     def manhattan_distance(problem, node) -> int: #:TODO non ammissibile
         stato_corrente = node.state.m_corrente
+        rows, cols = stato_corrente.shape
         goal = problem.goal
-
-        # Creiamo una mappa delle posizioni dei valori nel goal
         goal_positions = {goal[r, c]: (r, c) for r in range(goal.shape[0]) for c in range(goal.shape[1])}
 
-        distanza = 0
-        for c in range(0, goal.shape[1]):
-            for r in range(goal.shape[0] - 1, -1, -1):  # Dal basso verso l'alto
-                if stato_corrente[r, c] != 0:  # Evitiamo di cercare gli 0
-                    if stato_corrente[r, c] != goal[r, c]:
-                        gr, gc = goal_positions[stato_corrente[r, c]]
-                        for r_sopra in range(r, 0):  # controlliamo sopra
-                            if stato_corrente[r_sopra, c] != 0:  # Evitiamo di cercare gli 0
-                                distanza += 1
-                            else: break
-                        for r_sopra in range(gr, 0):  # controlliamo sopra
-                            if stato_corrente[r_sopra, gc] != 0:  # Evitiamo di cercare gli 0
-                                distanza += 1
-                            else: break
-                else: break
-        return distanza
+        errore_totale = 0
+
+        for c in range(0, cols):
+            for r in range(rows - 1, -1, -1):  # Dal basso verso l'alto
+                valore = node.state.m_corrente[r, c]
+                goal_valore = goal[r, c]
+                if valore != goal_valore:  # se il valore è sbagliato il numero di azioni per metterlo al posto giusto
+                    gr, gc = goal_positions[stato_corrente[r, c]]
+                    # dipenderà dai blocchi sopra
+                    for r_sopra in range(r, 0):  # controlliamo sopra
+                        if node.state.m_corrente[r_sopra][c] != 0:
+                            errore_totale += 1
+                        else:
+                            break
+                elif valore == 0:
+                    break
+        return errore_totale
 
     def euristica_drinkastica(problem, node) -> int:  #fa cacare, meglio la relaxed
         stato_corrente = node.state.m_corrente
@@ -271,23 +373,50 @@ class Mproblem(Problem):
         #print(blocchi_dal_goal)
         return blocchi_dal_goal
 
-"""
+
 matrice_inizio = np.array(
     [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 6, 0],
      [2, 5, 0, 0, 3, 4]])
-matrix_f = np.array([[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 6, 0, 0, 5],
+matrice_fine = np.array([[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 6, 0, 0, 5],
                      [3, 2, 4, 0, 0, 1]])
 
 # Esegui dei movimenti sulla matrice1
 movimenti = [(1, 2), (4, 2), (1, 5), (0, 1), (4, 0), (5, 4), (5, 3), (2, 5), (4, 5), (2, 5), (3, 2), (5, 4), (5, 4),
              (5, 2), (4, 3), (4, 5), (3, 5)]  # Esempio di movimenti: (colonna_sorgente, colonna_destinazione)
 
-problemazione = Mproblem(Matrice(matrice_inizio), matrix_f)
+problemazione = Mproblem(Matrice(matrix_i), matrix_f)
+s1 = execute("A-Star euristica posti posti sbagliati + giusti da spostare", astar_search, problemazione, problemazione.posti_sbagliati_piu_giusti_sopra)
+s2 = execute("A-Star euristica posti sbagliati + giusti da spostare + sol", astar_search, problemazione, problemazione.posti_sbagliati_piu_giusti_sopra_piu_costo_sol)
+print(s1.path_cost, "   ", s2.path_cost)
 #execute("A-Star euristica subgoal", astar_search, problemazione, problemazione.subgoal_problem)
-execute("A-Star euristica relax pesata", astar_search, problemazione, problemazione.weighted_relax)
-execute("A-Star euristica subgoal", astar_search, problemazione, problemazione.subgoal_problem)
-execute("A-Star euristica manhattan", astar_search, problemazione, problemazione.manhattan_distance)
+#execute("A-Star euristica relax pesata", astar_search, problemazione, problemazione.weighted_relax)
+#execute("A-Star euristica manhattan", astar_search, problemazione, problemazione.manhattan_distance)
 #execute("A-Star drink ti amo", astar_search, problemazione, problemazione.euristica_drinkastica)
+
+'''stato_corrente = node.state.m_corrente
+goal = problem.goal
+
+# Creiamo una mappa delle posizioni dei valori nel goal
+goal_positions = {goal[r, c]: (r, c) for r in range(goal.shape[0]) for c in range(goal.shape[1])}
+
+distanza = 0
+for c in range(0, goal.shape[1]):
+    for r in range(goal.shape[0] - 1, -1, -1):  # Dal basso verso l'alto
+        if stato_corrente[r, c] != 0:  # Evitiamo di cercare gli 0
+            if stato_corrente[r, c] != goal[r, c]:
+                gr, gc = goal_positions[stato_corrente[r, c]]
+                for r_sopra in range(r, 0):  # controlliamo sopra
+                    if stato_corrente[r_sopra, c] != 0:  # Evitiamo di cercare gli 0
+                        distanza += 1
+                    else: break
+                for r_sopra in range(gr, 0):  # controlliamo sopra
+                    if stato_corrente[r_sopra, gc] != 0:  # Evitiamo di cercare gli 0
+                        distanza += 1
+                    else: break
+        else: break
+return distanza'''
+
+
 
 '''                    distanza += abs(gr - r) + abs(gc - c)  # Distanza di Manhattan
                 else: break
@@ -296,4 +425,3 @@ execute("A-Star euristica manhattan", astar_search, problemazione, problemazione
                         distanza += r_sopra
                     else:
                         break'''
-"""
