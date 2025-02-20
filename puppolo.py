@@ -58,7 +58,8 @@ def inverti_mossa(mossa):
     return (mossa[1], mossa[0])  # Scambia la colonna di partenza con quella di destinazione
 
 
-def anima_matrice(matrix1, matrix2, movimenti):
+def anima_matrice(matrix, matrix2, movimenti):
+    matrix1 = np.copy(matrix)
     color_map = assign_colors()
     pygame.init()
 
