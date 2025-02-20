@@ -9,26 +9,34 @@ from keras import datasets, models, layers, callbacks
 import matplotlib.pyplot as plt
 import cv2 as cv
 
+# mat = np.array([[[3,1,2],[1,2,3],[3,1,3]],[[1,2,0],[3,2,1],[5,1,2]]])
+
+# print(mat[0])
+# # ordine crescente
+# mat = np.sort(mat, axis=2)
+# res = mat[:, :, 0]
+# res = res[::-1]  # ordine decrescente
+# print(mat[0])
+
+# exit(0)
 # importo modello
 model: models.Sequential = models.load_model("/home/tommaso/intelligenzaArtificiale/progetto/Block_Game/recognition_numbers.keras")
-model.predict(test_s)
-exit(0)
 def adjust_gamma(image, gamma):
     inv_gamma = 1.0 / gamma
     table = np.array([(i / 255.0) ** inv_gamma * 255 for i in np.arange(0, 256)]).astype("uint8")
     return cv.LUT(image, table)
 
-def getStato(img: cv.Mat) -> np.array:
-    assert img is not None, "file could not be read, check with os.path.exists()"
+def getStato(original_img: cv.Mat) -> np.array:
+    assert original_img is not None, "file could not be read, check with os.path.exists()"
 
     # dati immagine
-    larghezza_img = img.shape[1]
-    altezza_img = img.shape[0]
+    larghezza_img = original_img.shape[1]
+    altezza_img = original_img.shape[0]
     print("larghezza:", larghezza_img)
     print("altezza:", altezza_img)
     
     # correzione immagine
-    img = cv.cvtColor(img, cv.COLOR_BGR2GRAY) # scala grigi
+    img = cv.cvtColor(original_img, cv.COLOR_BGR2GRAY) # scala grigi
     img = adjust_gamma(img, gamma=1.7) # schiarisce immagine
     # inspessisce bordi
     #kernel = cv.getStructuringElement(cv.MORPH_RECT, (3,3)) 
@@ -39,9 +47,9 @@ def getStato(img: cv.Mat) -> np.array:
     (thresh, img) = cv.threshold(img, 180, 255, cv.THRESH_BINARY | cv.ADAPTIVE_THRESH_GAUSSIAN_C)
     
     # controllo immagine elaborata
-    cv.imshow("immagine elaborata", img)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+    # cv.imshow("immagine elaborata", img)
+    # cv.waitKey(0)
+    # cv.destroyAllWindows()
 
     # decommenta se usi gaussiana poché inverte i colori
     img = cv.bitwise_not(img)
@@ -111,7 +119,7 @@ def getStato(img: cv.Mat) -> np.array:
             inner_recs.append(rectExt)
 
     for rect in inner_recs:
-        rect_img = img[rect["y"]:rect["y"] + rect["h"], rect["x"]:rect["x"] + rect["w"]]
+        rect_img = original_img[rect["y"] + 5 :rect["y"] + rect["h"] - 5, rect["x"] + 5 :rect["x"] + rect["w"] - 5]
         cv.imshow("rettangolo",rect_img)
         cv.waitKey(0)
 
@@ -137,11 +145,14 @@ def recon_number(rect: cv.Mat) -> int:
     # adatto input size
     rect = cv.bitwise_not(rect)
     rect = cv.resize(rect, (28, 28))
-    #unidimensionale = rect.reshape(,28), 28*28)
-    cv.imshow("input", rect)
-    cv.waitKey(0)
-
+    rect = cv.cvtColor(rect, cv.COLOR_BGR2GRAY) # scala grigi
+    # rect = cv.normalize(
+    #     rect, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
+    
+    plt.imshow(rect)
+    plt.show()
     rect = rect/255
+
     print(rect)
     predictions = model.predict(np.array([rect])) 
     return predictions.argmax(axis=1) + 1

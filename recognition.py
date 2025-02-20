@@ -21,13 +21,15 @@ The kernel size determines how much of the image you want affecting the output o
 
 The Inception Architecture takes these decisions out of the hand of the modeller as it lumps filters of different kernel size together and let the model learn the best ones to use."""
 
-(train_images, train_labels), (test_images, test_labels) = datasets.cifar10.load_data()
-"""
+(train_images, train_labels), (test_images, test_labels) = datasets.mnist.load_data()
 # tolgo label di numeri non necessari
 filtro_train = (train_labels>0) & (train_labels <7)
 filtro_test = (test_labels>0) & (test_labels <7)
 
+plt.imshow(train_images[0])
+plt.savefig("test_plot")
 
+exit(0)
 train_images = train_images[filtro_train]
 train_labels = train_labels[filtro_train] - 1
 test_images = test_images[filtro_test]
@@ -37,41 +39,19 @@ test_labels = test_labels[filtro_test] - 1
 train_images= train_images/255
 test_images= test_images/255
 
-model: models.Sequential = models.load_model("/home/tommaso/intelligenzaArtificiale/progetto/Block_Game/recognition_numbers.keras")
-predicted = model.predict(test_images).argmax(axis=1) + 1
-
-exit(0)
-print(train_labels[:100])
 labels = set(train_labels)
-print(labels)
-
-# stampa shape training images
-print(train_images.shape)
-# stampa alcune training images
-plt.figure(figsize=(10,10))
-for i,image in enumerate(train_images[0:25]):
-    plt.subplot(5,5,i+1)
-    plt.xticks([])
-    plt.yticks([])
-    plt.grid(False)
-    plt.imshow(image, cmap=plt.cm.binary)
-plt.show() """
-
-# normalizzo
-train_images= train_images/255
-test_images= test_images/255
 
 #definisco CNN
 model = models.Sequential([
-    layers.Input(shape=(32,32,3)),
-    layers.Conv2D(64, (3, 3), activation='relu'),
+    layers.Input(shape=(28,28,1)),
+    layers.Conv2D(16, (5, 5), activation='relu'),
     layers.MaxPooling2D((2, 2)),
     # layers.Dropout(0.3),
-    # layers.Conv2D(32, (3, 3), activation='relu'),
+    # layers.Conv2D(64, (5, 5), activation='relu'),
     # layers.MaxPooling2D((2,2)),
     # layers.Dense(64, activation='relu'),
     layers.Flatten(),
-    layers.Dense(10, activation='softmax')
+    layers.Dense(len(labels), activation='softmax')
 ])
 # stampo e salvo model summary
 model.summary()
