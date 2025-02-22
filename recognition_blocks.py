@@ -47,9 +47,9 @@ def getStato(original_img: cv.Mat) -> np.array:
     (thresh, img) = cv.threshold(img, 180, 255, cv.THRESH_BINARY | cv.ADAPTIVE_THRESH_GAUSSIAN_C)
     
     # controllo immagine elaborata
-    # cv.imshow("immagine elaborata", img)
-    # cv.waitKey(0)
-    # cv.destroyAllWindows()
+    cv.imshow("immagine elaborata", img)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
 
     # decommenta se usi gaussiana poché inverte i colori
     img = cv.bitwise_not(img)
@@ -120,13 +120,13 @@ def getStato(original_img: cv.Mat) -> np.array:
 
     for rect in inner_recs:
         rect_img = original_img[rect["y"] + 5 :rect["y"] + rect["h"] - 5, rect["x"] + 5 :rect["x"] + rect["w"] - 5]
-        # cv.imshow("rettangolo",rect_img)
-        # cv.waitKey(0)
+        cv.imshow("rettangolo",rect_img)
+        cv.waitKey(0)
 
         rect["value"] = recon_number(rect_img)
         print(rect["value"])
     print("ho rilevato %s blocchi" %len(inner_recs))
-    #cv.destroyAllWindows()
+    cv.destroyAllWindows()
     return costruisci_mat(inner_recs)
 
 # controlla se rettangolo 1 contiene rettangolo 2
