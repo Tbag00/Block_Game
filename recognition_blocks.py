@@ -3,30 +3,24 @@ import copy
 from os import remove
 import re
 import numpy as np
+from pygame import ver
 import tensorflow as tf
 from tensorflow import keras
 from keras import datasets, models, layers, callbacks
 import matplotlib.pyplot as plt
 import cv2 as cv
 
-# mat = np.array([[[3,1,2],[1,2,3],[3,1,3]],[[1,2,0],[3,2,1],[5,1,2]]])
-
-# print(mat[0])
-# # ordine crescente
-# mat = np.sort(mat, axis=2)
-# res = mat[:, :, 0]
-# res = res[::-1]  # ordine decrescente
-# print(mat[0])
-
-# exit(0)
 # importo modello
 model: models.Sequential = models.load_model("recognition_numbers.keras")
+
+# schiarisce immagine
 def adjust_gamma(image, gamma):
     inv_gamma = 1.0 / gamma
     table = np.array([(i / 255.0) ** inv_gamma * 255 for i in np.arange(0, 256)]).astype("uint8")
     return cv.LUT(image, table)
 
-def getStato(original_img: cv.Mat) -> np.array:
+# converte immagine con blocchi numerati in stato (matrice)
+def getStato(original_img: cv.Mat, verbose: bool) -> np.array:
     assert original_img is not None, "file could not be read, check with os.path.exists()"
 
     # dati immagine
@@ -38,18 +32,17 @@ def getStato(original_img: cv.Mat) -> np.array:
     # correzione immagine
     img = cv.cvtColor(original_img, cv.COLOR_BGR2GRAY) # scala grigi
     img = adjust_gamma(img, gamma=1.7) # schiarisce immagine
-    # inspessisce bordi
-    #kernel = cv.getStructuringElement(cv.MORPH_RECT, (3,3)) 
-    #img = cv.morphologyEx(img, cv.MORPH_CLOSE, kernel, iterations=2)
+    
     # normalizza
     img = cv.normalize(
         img, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
     (thresh, img) = cv.threshold(img, 180, 255, cv.THRESH_BINARY | cv.ADAPTIVE_THRESH_GAUSSIAN_C)
     
     # controllo immagine elaborata
-    cv.imshow("immagine elaborata", img)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+    if verbose:
+        cv.imshow("immagine elaborata", img)
+        cv.waitKey(0)
+        cv.destroyAllWindows()
 
     # decommenta se usi gaussiana poché inverte i colori
     img = cv.bitwise_not(img)
@@ -75,30 +68,25 @@ def getStato(original_img: cv.Mat) -> np.array:
             print("x: %s, w: %s, y: %s, h: %s" %(x, w, y, h))
             print("lati:", len(approx))
             
-            """ # controllo se non funziona
-            cv.drawContours(img, [contour], -1, (0,255,255), 20)
-            cv.drawContours(img, [approx], -1, (0,0,255), 10)
-            cv.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 10)
-            cv.imshow("test2", img)
-            cv.waitKey(0)
-            """
+            img_contoured: cv.Mat # usata solo se verbose
+            if verbose:
+                img_contoured = img.copy()
+                cv.drawContours(img_contoured, [contour], -1, (0,255,0), 10)
+                cv.drawContours(img_contoured, [approx], -1, (0,0,255), 10)
+                cv.imshow("Contour and approximated contour", img_contoured)
+                cv.waitKey(0)
 
             # controllo che contour sia rettangolo
             if len(approx) == 4:
                 x, y, w, h = cv.boundingRect(approx)
                 
-                """ # controllo se non funziona
-                cv.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 10)
-                cv.imshow("test2", img)
-                cv.waitKey(0)
-                """
+                if verbose: 
+                    cv.rectangle(img_contoured, (x, y), (x + w, y + h), (255, 0, 0), 10)
+                    cv.imshow("rectangle", img_contoured)
+                    cv.waitKey(0)
+
                 # salvo rettangoli con dimensioni limitate
                 if w > (larghezza_img / 16.0) and h > (altezza_img / 16.0) and w < (larghezza_img / 4.0) and h < (altezza_img / 4.0):
-                    """ # mostro triangoli
-                    cv.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 10)
-                    cv.imshow("test2", img)
-                    cv.waitKey(0)
-                    """
                     rects.append({
                         "x": x, "y": y, "w": w, "h": h, "value": 0
                     })
@@ -120,8 +108,9 @@ def getStato(original_img: cv.Mat) -> np.array:
 
     for rect in inner_recs:
         rect_img = original_img[rect["y"] + 5 :rect["y"] + rect["h"] - 5, rect["x"] + 5 :rect["x"] + rect["w"] - 5]
-        cv.imshow("rettangolo",rect_img)
-        cv.waitKey(0)
+        if verbose:
+            cv.imshow("number inside box",rect_img)
+            cv.waitKey(0)
 
         rect["value"] = recon_number(rect_img)
         print(rect["value"])
