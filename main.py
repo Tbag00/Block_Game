@@ -1,5 +1,7 @@
+from tabnanny import verbose
 import tkinter as tk
 from tkinter import filedialog, messagebox
+from tkinter import Label
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
@@ -9,6 +11,7 @@ from prova import Mproblem, Matrice, execute
 from puppolo import anima_matrice
 import cv2 as cv
 from modifica_matrice import edit_matrix
+from PIL import Image, ImageTk
 
 # Funzione per caricare l'immagine
 def upload_image(is_iniziale: bool):
@@ -31,7 +34,7 @@ def upload_image(is_iniziale: bool):
             immagine_finale = image
 
 # Funzione per mostrare l'immagine in una finestra separata usando matplotlib
-def show_image_in_window(image, is_iniziale):
+def show_image_in_window(image, is_iniziale: bool):
     # Converte l'immagine da BGR a RGB per matplotlib
     image_rgb = cv.cvtColor(image, cv.COLOR_BGR2RGB)
 
@@ -43,15 +46,39 @@ def show_image_in_window(image, is_iniziale):
     plt.title(title)
     plt.show()
 
+# bottone verbose: se "on" mostra tutti i passaggi della ricognizione
+def verbose_toggle():
+    global verbose
+     
+    # Determine is on or off
+    if verbose:
+        verbose_toggle.config(image = off)
+        my_label.config(text = "Verbose non attivo", fg = "red")
+        verbose = False
+    else:
+        verbose_toggle.config(image = on)
+        my_label.config(text = "Verbose attivo", fg = "green")
+        verbose = True
+
+# Funzione per caricare l'immagine ridimensionata
+def load_resized_image(image_path, width, height):
+    img = Image.open(image_path)
+    img_resized = img.resize((width, height), Image.Resampling.LANCZOS)
+
+    # Converte l'immagine in formato compatibile con Tkinter
+    img_tk = ImageTk.PhotoImage(img_resized)
+    return img_tk
+
 # Funzione di conferma
-def confirm_images():
+def confirm_images(verbose: bool):
+    # controllo: entrambe immagini caricate
     if immagine_iniziale is None or immagine_finale is None:
         messagebox.showerror("Errore", "Devi caricare entrambe le immagini!")
         return
 
     # Prosegui con il calcolo e la visualizzazione
-    matrice_iniziale = getStato(immagine_iniziale)
-    matrice_finale = getStato(immagine_finale)
+    matrice_iniziale = getStato(immagine_iniziale, verbose)
+    matrice_finale = getStato(immagine_finale, verbose)
 
     print("matrice iniziale:")
     print(matrice_iniziale)
@@ -91,31 +118,45 @@ def exit_program():
 if __name__ == "__main__":
     immagine_iniziale = None
     immagine_finale = None
+    verbose = False
 
     # Crea la finestra principale
     root = tk.Tk()
     root.title("Block's World")
-    
+
     # Crea il frame per il layout
     frame = tk.Frame(root)
     frame.pack(padx=20, pady=20)
 
     root.protocol("WM_DELETE_WINDOW", on_close)
 
+    # Create Label
+    my_label = Label(root, 
+    text = "Verbose non attivo", 
+    fg = "red")
+    my_label.pack(pady = 20)
+    
+    on = load_resized_image("switch_png/on.png", 50, 50)  # Imposta la dimensione a 100x50 pixel
+    off = load_resized_image("switch_png/off.png", 50, 50)  # Imposta la dimensione a 100x50 pixel
+
     # Crea i pulsanti
     upload_button1 = tk.Button(frame, text="Upload Stato Iniziale", command=lambda: upload_image(is_iniziale=True))
-    upload_button1.grid(row=0, column=0, pady=10, padx=10)
+    upload_button1.pack(pady=10, padx=10)
 
     upload_button2 = tk.Button(frame, text="Upload Stato Finale", command=lambda: upload_image(is_iniziale=False))
-    upload_button2.grid(row=1, column=0, pady=10, padx=10)
+    upload_button2.pack(pady=10, padx=10)
 
     # Pulsante di conferma per procedere
-    confirm_button = tk.Button(frame, text="Conferma e Inizia", command=confirm_images)
-    confirm_button.grid(row=2, column=0, columnspan=2, pady=20)
+    confirm_button = tk.Button(frame, text="Conferma e Inizia", command=lambda: confirm_images(verbose))
+    confirm_button.pack(pady=20)
+
+    # Toggle verbose
+    verbose_toggle = tk.Button(root, image = off, bd = 0, command = verbose_toggle)
+    verbose_toggle.pack(pady=10, padx=10)
 
     # Pulsante di uscita
     exit_button = tk.Button(frame, text="Esci", command=exit_program)
-    exit_button.grid(row=3, column=0, columnspan=2, pady=20)
+    verbose_toggle.pack(pady=10, padx=10)
 
     # Avvia il loop principale
     root.mainloop()

@@ -9,3 +9,4 @@ opencv
 visualkeras
 pygame
 tkinter
+PIL
