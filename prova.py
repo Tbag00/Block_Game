@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from collections import deque
+from tkinter import W
 from typing import List, Tuple
 import numpy as np
 import random
@@ -27,8 +28,8 @@ def apply_gravity(matrix):
         matrix[:, col] = [0] * zero_count + non_zero_values  # Riempie con zeri sopra e numeri sotto
     return matrix
 
-def generate_matrix():
-    num_elements = 6  # Numero casuale di elementi unici tra 1 e 6
+def generate_matrix(num_elements:int):
+
     numbers = random.sample(range(1, num_elements + 1), num_elements)  # Genera numeri unici
 
     matrix = np.zeros((num_elements, num_elements), dtype=int)  # Crea una matrice quadrata di zeri
@@ -40,12 +41,11 @@ def generate_matrix():
 
     return apply_gravity(matrix)
 
-matrix_i = generate_matrix()
-matrix_f = generate_matrix()
+matrix_i = generate_matrix(6)
+matrix_f = generate_matrix(6)
 
 '''print(matrix_i)  #16 a 9
 print(matrix_f)'''
-
 
 
 def prova(state: np.ndarray) -> list[tuple[int, int]]:
@@ -111,6 +111,27 @@ def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs):
     print(f"{GREEN}Time:{RESET} {end - start} s")
     return sol
 
+
+def execute2(name: str, algorithm: Callable, problem: Problem, *args, **kwargs):
+    print(f"{RED}{name}{RESET}\n")
+    #   uso perf_counter per contare "meglio" il tempo hardware al massimo
+    start = time.perf_counter()
+    sol = algorithm(problem, *args, **kwargs)
+    end = time.perf_counter()
+    if problem.goal is not None:
+        print(f"\n{GREEN}PROBLEM:\n{RESET} {problem.initial.m_corrente} \n  |\n  v\n {problem.goal}")
+    if isinstance(sol, Result):
+        print(f"{GREEN}Total nodes generated:{RESET} {sol.nodes_generated}")
+        print(f"{GREEN}Paths explored:{RESET} {sol.paths_explored}")
+        print(f"{GREEN}Nodes left in frontier:{RESET} {sol.nodes_left_in_frontier}")
+        sol = sol.result
+    print(f"{GREEN}Result:{RESET} {sol.solution() if sol is not None else '---'}")
+    if isinstance(sol, Node):
+        print(f"{GREEN}Path Cost:{RESET} {sol.path_cost}")
+        print(f"{GREEN}Path Length:{RESET} {sol.depth}")
+    print(f"{GREEN}Time:{RESET} {end - start} s")
+    d = {"tempo": end-start, "nodi": sol.nodes_generated, "explored_paths": sol.paths_explored, "cost": sol.path_cost, "lunghezza": sol.depth}
+    return d
 
 class Matrice:
     def __lt__(self, other):
