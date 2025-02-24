@@ -23,8 +23,6 @@ def upload_image(is_iniziale: bool):
     if file_path:
         # Carica l'immagine con OpenCV
         image = cv.imread(file_path)
-        # Mostra l'immagine in una finestra separata
-        show_image_in_window(image, is_iniziale)
         
         if is_iniziale:
             global immagine_iniziale
@@ -32,6 +30,9 @@ def upload_image(is_iniziale: bool):
         else:
             global immagine_finale
             immagine_finale = image
+
+        # Mostra l'immagine in una finestra separata
+        show_image_in_window(image, is_iniziale)
 
 # Funzione per mostrare l'immagine in una finestra separata usando matplotlib
 def show_image_in_window(image, is_iniziale: bool):
@@ -80,30 +81,34 @@ def confirm_images(verbose: bool):
     matrice_iniziale = getStato(immagine_iniziale, verbose)
     matrice_finale = getStato(immagine_finale, verbose)
 
-    print("matrice iniziale:")
-    print(matrice_iniziale)
-    print("matrice finale:")
-    print(matrice_finale)
-
     matrice_iniziale = edit_matrix(matrice_iniziale)
     matrice_finale = edit_matrix(matrice_finale)
 
-    print("matrice iniziale:")
-    print(matrice_iniziale)
-    print("matrice finale:")
-    print(matrice_finale)
-
     problemazione = Mproblem(Matrice(matrice_iniziale), matrice_finale)
-    
-    soluzione2  = execute("A-Star euristica veloce", astar_search, problemazione, problemazione.posti_sbagliati_piu_giusti_sopra_piu_costo_sol)
-    anima_matrice(matrice_iniziale, matrice_finale, soluzione2.solution())
-    
-    soluzione3  = execute("A-Star euristica relaxed pesata", astar_search, problemazione, problemazione.posti_sbagliati_piu_giusti_sopra)
-    anima_matrice(matrice_iniziale, matrice_finale, soluzione3.solution())  
-    
-    soluzione1 = execute("A-Star euristica relaxed", astar_search, problemazione, problemazione.posti_sbagliati)
-    anima_matrice(matrice_iniziale, matrice_finale, soluzione1.solution()) 
+    solution_window = tk.Toplevel(root) # creo nuova finestra
+    solution_window.title("Scegli l' euristica")
+
+    button1 = tk.Button(solution_window, text="A-Star euristica veloce", command=lambda: solution(matrice_iniziale, matrice_finale, problemazione, "A-Star euristica veloce"))
+    button2 = tk.Button(solution_window, text="A-Star euristica relaxed pesata", command=lambda: solution(matrice_iniziale, matrice_finale, problemazione, "A-Star euristica relaxed pesata"))
+    button3 = tk.Button(solution_window, text="A-Star euristica relaxed", command=lambda: solution(matrice_iniziale, matrice_finale, problemazione, "A-Star euristica relaxed"))
+
+    button1.pack(pady=10)
+    button2.pack(pady=10)
+    button3.pack(pady=10)
     messagebox.showinfo("Completato", "Le immagini sono state processate con successo!")
+
+def solution(matrice_iniziale:np.array, matrice_finale:np.array, problema: Mproblem, nome:str):
+    if nome == "A-Star euristica veloce":
+        soluzione  = execute("A-Star euristica veloce", astar_search, problema, problema.posti_sbagliati_piu_giusti_sopra_piu_costo_sol)
+    elif nome == "A-Star euristica relaxed pesata":
+        soluzione  = execute("A-Star euristica relaxed pesata", astar_search, problema, problema.posti_sbagliati_piu_giusti_sopra)
+    elif nome == "A-Star euristica relaxed":
+        soluzione  = execute("A-Star euristica relaxed", astar_search, problema, problema.posti_sbagliati)
+    else:
+        messagebox.showerror("Errore", "errore nella selezione della soluzione")
+        return
+
+    anima_matrice(matrice_iniziale, matrice_finale, soluzione.solution())
 
 # Funzione di chiusura
 def on_close():
