@@ -73,7 +73,7 @@ early_stopping = callbacks.EarlyStopping(monitor='val_loss', min_delta=0.1, pati
 # history = model.fit(train_images, train_labels, epochs=15, validation_data=(test_images, test_labels))
 history = model.fit(train_images, train_labels, batch_size= 128, epochs=15, validation_split=0.1, callbacks=[early_stopping])
 
-model.save("recognition_numbers.keras", overwrite= True)
+model.save("recognition_numbers2.keras", overwrite= True)
 
 # Degine a subplot grid 1x2
 plt.figure(figsize=(12, 6))
@@ -98,5 +98,5 @@ plt.ylim([0.0, 2])
 plt.legend(loc='upper right')
 
 plt.tight_layout()
-plt.savefig("Accuracy_Loss_CNN")
+plt.savefig("Accuracy_Loss_CNN2")
 plt.show()
