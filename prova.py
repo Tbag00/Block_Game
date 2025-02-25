@@ -6,7 +6,7 @@ import numpy as np
 import random
 from aima import Problem, Node, memoize, PriorityQueue, GraphProblem
 from aima import depth_first_graph_search, breadth_first_graph_search, iterative_deepening_search, \
-    depth_limited_search, astar_search
+    depth_limited_search
 from collections.abc import Callable
 import time
 from dataclasses import dataclass
@@ -90,6 +90,50 @@ class Result:
     paths_explored: int
     nodes_left_in_frontier: int
 
+def best_first_graph_search1(problem, f, display=False):
+    """Search the nodes with the lowest f scores first.
+    You specify the function f(node) that you want to minimize; for example,
+    if f is a heuristic estimate to the goal, then we have greedy best
+    first search; if f is node.depth then we have breadth-first search.
+    There is a subtlety: the line "f = memoize(f, 'f')" means that the f
+    values will be cached on the nodes as they are computed. So after doing
+    a best first search you can examine the f values of the path returned."""
+    f = memoize(f, 'f')
+    node = Node(problem.initial)
+    frontier = PriorityQueue('min', f)
+    frontier.append(node)
+    explored = set()
+    counter = 1
+    while frontier:
+        node = frontier.pop()
+        if problem.goal_test(node.state):
+            if display:
+                print(len(explored), "paths have been expanded and", len(frontier), "paths remain in the frontier")
+            return Result(node, counter, len(explored), 0)
+        explored.add(node.state)
+        for child in node.expand(problem):
+            counter += 1
+            if child.state not in explored and child not in frontier:
+                frontier.append(child)
+            elif child in frontier:
+                if f(child) < frontier[child]:
+                    del frontier[child]
+                    frontier.append(child)
+    return Result(None, counter, len(explored), 0)
+
+
+def astar_search(problem, h=None, display=False)-> Result:
+    """A* search is best-first graph search with f(n) = g(n)+h(n).
+    You need to specify the h function when you call astar_search, or
+    else in your Problem subclass."""
+    h = memoize(h or problem.h, 'h')
+
+    return best_first_graph_search1(problem, lambda n: n.path_cost + h(n), display)
+
+'''def astar_search(problem: Problem, h: Callable | None = None) -> Result:
+  h = memoize(h or problem.h, 'h')
+  return best_first_graph_search(problem, lambda node : h(node) + node.path_cost)'''
+
 
 def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs):
     print(f"{RED}{name}{RESET}\n")
@@ -109,29 +153,44 @@ def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs):
         print(f"{GREEN}Path Cost:{RESET} {sol.path_cost}")
         print(f"{GREEN}Path Length:{RESET} {sol.depth}")
     print(f"{GREEN}Time:{RESET} {end - start} s")
-    return sol
+    
 
 
-def execute2(name: str, algorithm: Callable, problem: Problem, *args, **kwargs):
+
+
+def execute3(name: str, algorithm: Callable, problem: Problem, *args, **kwargs) -> int:
     print(f"{RED}{name}{RESET}\n")
-    #   uso perf_counter per contare "meglio" il tempo hardware al massimo
-    start = time.perf_counter()
+    d = {"tempo": 0, "nodi": 0, "explored_paths": 0, "cost": 0}
+
+    start = time.time()
     sol = algorithm(problem, *args, **kwargs)
-    end = time.perf_counter()
+    end = time.time()
+    d["tempo"] = end - start
+
+    nodi_g = 0
+    cammini = 0
     if problem.goal is not None:
-        print(f"\n{GREEN}PROBLEM:\n{RESET} {problem.initial.m_corrente} \n  |\n  v\n {problem.goal}")
+        print(f"\n{GREEN}PROBLEM:{RESET} {problem.initial} -> {problem.goal}")
     if isinstance(sol, Result):
+        nodi_g = sol.nodes_generated
+        print(nodi_g)
+        cammini = sol.paths_explored
+        
         print(f"{GREEN}Total nodes generated:{RESET} {sol.nodes_generated}")
         print(f"{GREEN}Paths explored:{RESET} {sol.paths_explored}")
         print(f"{GREEN}Nodes left in frontier:{RESET} {sol.nodes_left_in_frontier}")
         sol = sol.result
-    print(f"{GREEN}Result:{RESET} {sol.solution() if sol is not None else '---'}")
+        d["nodi"] = nodi_g
+        d["explored_paths"] = cammini
+    #print(f"{GREEN}Result:{RESET} {sol.solution() if sol is not None else '---'}")
     if isinstance(sol, Node):
         print(f"{GREEN}Path Cost:{RESET} {sol.path_cost}")
         print(f"{GREEN}Path Length:{RESET} {sol.depth}")
-    print(f"{GREEN}Time:{RESET} {end - start} s")
-    d = {"tempo": end-start, "nodi": sol.nodes_generated, "explored_paths": sol.paths_explored, "cost": sol.path_cost, "lunghezza": sol.depth}
+        print(f"{GREEN}Time:{RESET} {end - start} s")
+        d["cost"] = sol.path_cost
+
     return d
+
 
 class Matrice:
     def __lt__(self, other):
