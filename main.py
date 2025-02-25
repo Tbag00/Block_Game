@@ -6,8 +6,7 @@ from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 from recognition_blocks import getStato
-from aima import astar_search
-from prova import Mproblem, Matrice, execute
+from prova import Mproblem, Matrice, execute, astar_search
 from puppolo import anima_matrice
 import cv2 as cv
 from modifica_matrice import edit_matrix

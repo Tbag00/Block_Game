@@ -153,11 +153,8 @@ def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs):
         print(f"{GREEN}Path Cost:{RESET} {sol.path_cost}")
         print(f"{GREEN}Path Length:{RESET} {sol.depth}")
     print(f"{GREEN}Time:{RESET} {end - start} s")
+    return sol
     
-
-
-
-
 def execute3(name: str, algorithm: Callable, problem: Problem, *args, **kwargs) -> int:
     print(f"{RED}{name}{RESET}\n")
     d = {"tempo": 0, "nodi": 0, "explored_paths": 0, "cost": 0}
