@@ -20,6 +20,7 @@ manhattan 6: tempo: 0.31964840000728145, nodi: 506, explored_paths: 22, cost: 9
 subgoal 6: tempo: 37.37748270001612, nodi: 6221, explored_paths: 335, cost: 10
 relaxed 6: tempo: 53.158385899994755, nodi: 7186, explored_paths: 364, cost: 8
 manhattan 7: tempo: 7.656606200005626, nodi: 2566, explored_paths: 127, cost: 8
+subgoal 7: tempo: 601.110419900011, nodi: 31821, explored_paths: 1898, cost: 0
 relaxed 7: tempo: 86.61667700001271, nodi: 9611, explored_paths: 511, cost: 7
 manhattan 8: tempo: 0.32537189999129623, nodi: 551, explored_paths: 30, cost: 7
 subgoal 8: tempo: 0.941562599997269, nodi: 966, explored_paths: 57, cost: 10
@@ -28,6 +29,7 @@ manhattan 9: tempo: 0.21708380000200123, nodi: 411, explored_paths: 18, cost: 5
 subgoal 9: tempo: 1.371687299979385, nodi: 1106, explored_paths: 48, cost: 5
 relaxed 9: tempo: 1.0676538000116125, nodi: 926, explored_paths: 40, cost: 5
 manhattan 10: tempo: 0.12235650001093745, nodi: 331, explored_paths: 20, cost: 8
+subgoal 10: tempo: 600.5098613000009, nodi: 29461, explored_paths: 1670, cost: 0
 relaxed 10: tempo: 2.4636059000040404, nodi: 1546, explored_paths: 79, cost: 7
 manhattan 11: tempo: 1.4574084999912884, nodi: 1106, explored_paths: 54, cost: 8
 subgoal 11: tempo: 37.921685400011484, nodi: 6556, explored_paths: 359, cost: 10
@@ -36,6 +38,7 @@ manhattan 12: tempo: 0.17957000000751577, nodi: 376, explored_paths: 16, cost: 7
 subgoal 12: tempo: 5.579109399986919, nodi: 2241, explored_paths: 102, cost: 7
 relaxed 12: tempo: 1.0004261000140104, nodi: 886, explored_paths: 38, cost: 6
 manhattan 13: tempo: 0.057800899987341836, nodi: 206, explored_paths: 12, cost: 7
+subgoal 13: tempo: 600.5721828000096, nodi: 29806, explored_paths: 1810, cost: 0
 relaxed 13: tempo: 0.8052437999867834, nodi: 951, explored_paths: 62, cost: 7
 manhattan 14: tempo: 1.0117557999910787, nodi: 916, explored_paths: 39, cost: 7
 subgoal 14: tempo: 277.74639580000076, nodi: 19021, explored_paths: 1082, cost: 9
@@ -65,6 +68,7 @@ manhattan 22: tempo: 0.4319699000043329, nodi: 606, explored_paths: 27, cost: 5
 subgoal 22: tempo: 6.057574599981308, nodi: 2421, explored_paths: 129, cost: 8
 relaxed 22: tempo: 7.329316299990751, nodi: 2646, explored_paths: 127, cost: 5
 manhattan 23: tempo: 4.1571143999753986, nodi: 1981, explored_paths: 92, cost: 9
+subgoal 23: tempo: 600.5175642000104, nodi: 28656, explored_paths: 1621, cost: 0
 relaxed 23: tempo: 93.44253470000695, nodi: 9681, explored_paths: 552, cost: 8
 manhattan 24: tempo: 0.06324150000000373, nodi: 221, explored_paths: 9, cost: 6
 subgoal 24: tempo: 0.7110882000124548, nodi: 826, explored_paths: 44, cost: 8
@@ -92,6 +96,7 @@ subgoal 31: tempo: 0.19807029998628423, nodi: 436, explored_paths: 24, cost: 9
 relaxed 31: tempo: 0.8041834000032395, nodi: 836, explored_paths: 45, cost: 7
 manhattan 32: tempo: 0.1687781999935396, nodi: 366, explored_paths: 16, cost: 8
 subgoal 32: tempo: 172.95330520000425, nodi: 13616, explored_paths: 783, cost: 9
+relaxed 32: tempo: 600.5806756000093, nodi: 26471, explored_paths: 1531, cost: 0
 manhattan 33: tempo: 0.28333049998036586, nodi: 511, explored_paths: 26, cost: 8
 subgoal 33: tempo: 12.160567799990531, nodi: 3496, explored_paths: 176, cost: 11
 relaxed 33: tempo: 6.888644999999087, nodi: 2486, explored_paths: 121, cost: 6
@@ -129,6 +134,7 @@ manhattan 44: tempo: 0.04220759999589063, nodi: 181, explored_paths: 8, cost: 7
 subgoal 44: tempo: 0.08997289999388158, nodi: 271, explored_paths: 11, cost: 9
 relaxed 44: tempo: 0.40167039999505505, nodi: 586, explored_paths: 23, cost: 7
 manhattan 45: tempo: 0.08065629997872747, nodi: 256, explored_paths: 12, cost: 7
+subgoal 45: tempo: 600.1126494999917, nodi: 29816, explored_paths: 1840, cost: 0
 relaxed 45: tempo: 21.82513289997587, nodi: 4996, explored_paths: 292, cost: 7
 manhattan 46: tempo: 6.855140999978175, nodi: 2586, explored_paths: 143, cost: 8
 subgoal 46: tempo: 6.759764300019015, nodi: 2511, explored_paths: 120, cost: 12
@@ -138,6 +144,7 @@ subgoal 47: tempo: 0.09708069998305291, nodi: 281, explored_paths: 13, cost: 9
 relaxed 47: tempo: 3.201994899980491, nodi: 1671, explored_paths: 81, cost: 7
 manhattan 48: tempo: 0.46333270001923665, nodi: 626, explored_paths: 29, cost: 9
 subgoal 48: tempo: 84.94164669999736, nodi: 9516, explored_paths: 492, cost: 15
+relaxed 48: tempo: 600.3177293000044, nodi: 29281, explored_paths: 1732, cost: 0
 manhattan 49: tempo: 3.8472256000095513, nodi: 1861, explored_paths: 90, cost: 10
 subgoal 49: tempo: 1.066156500019133, nodi: 976, explored_paths: 45, cost: 11
 relaxed 49: tempo: 2.2885165000043344, nodi: 1361, explored_paths: 58, cost: 7
@@ -149,6 +156,7 @@ subgoal 51: tempo: 2.7074575999868102, nodi: 1526, explored_paths: 70, cost: 9
 relaxed 51: tempo: 11.441302100021858, nodi: 3166, explored_paths: 139, cost: 6
 manhattan 52: tempo: 0.13986329999170266, nodi: 331, explored_paths: 17, cost: 9
 subgoal 52: tempo: 36.590861000004224, nodi: 6656, explored_paths: 371, cost: 17
+relaxed 52: tempo: 600.0705580000067, nodi: 25421, explored_paths: 1399, cost: 0
 manhattan 53: tempo: 0.38768759998492897, nodi: 571, explored_paths: 25, cost: 7
 subgoal 53: tempo: 13.885941300017294, nodi: 3686, explored_paths: 180, cost: 6
 relaxed 53: tempo: 1.0966339000151493, nodi: 926, explored_paths: 41, cost: 6
@@ -162,6 +170,7 @@ manhattan 56: tempo: 0.07780100000672974, nodi: 251, explored_paths: 14, cost: 7
 subgoal 56: tempo: 0.18733240000437945, nodi: 401, explored_paths: 22, cost: 9
 relaxed 56: tempo: 5.597902399982559, nodi: 2221, explored_paths: 110, cost: 7
 manhattan 57: tempo: 0.11263509999844246, nodi: 301, explored_paths: 16, cost: 7
+subgoal 57: tempo: 600.7356518000015, nodi: 29391, explored_paths: 1666, cost: 0
 relaxed 57: tempo: 0.45029320000321604, nodi: 626, explored_paths: 28, cost: 7
 manhattan 58: tempo: 0.034733899985440075, nodi: 156, explored_paths: 7, cost: 5
 subgoal 58: tempo: 0.8012332000071183, nodi: 821, explored_paths: 36, cost: 7
@@ -179,14 +188,17 @@ manhattan 62: tempo: 0.16506790000130422, nodi: 371, explored_paths: 19, cost: 6
 subgoal 62: tempo: 0.02256760001182556, nodi: 126, explored_paths: 5, cost: 4
 relaxed 62: tempo: 0.024075299996184185, nodi: 126, explored_paths: 5, cost: 4
 manhattan 63: tempo: 8.868135199998505, nodi: 2861, explored_paths: 149, cost: 10
+subgoal 63: tempo: 600.3890855000063, nodi: 37396, explored_paths: 2196, cost: 0
 relaxed 63: tempo: 72.26257759999135, nodi: 8861, explored_paths: 518, cost: 7
 manhattan 64: tempo: 0.40062030000262894, nodi: 591, explored_paths: 29, cost: 8
+subgoal 64: tempo: 600.1162499000202, nodi: 29071, explored_paths: 1646, cost: 0
 relaxed 64: tempo: 21.906179899990093, nodi: 4771, explored_paths: 232, cost: 7
 manhattan 65: tempo: 0.05427240001154132, nodi: 201, explored_paths: 11, cost: 7
 subgoal 65: tempo: 45.904793199995765, nodi: 7856, explored_paths: 446, cost: 18
 relaxed 65: tempo: 2.3660297000024, nodi: 1496, explored_paths: 87, cost: 7
 manhattan 66: tempo: 35.257185700000264, nodi: 6056, explored_paths: 312, cost: 8
 subgoal 66: tempo: 90.64599200000521, nodi: 9751, explored_paths: 546, cost: 13
+relaxed 66: tempo: 600.1638660999888, nodi: 30546, explored_paths: 1823, cost: 0
 manhattan 67: tempo: 0.8325524999818299, nodi: 861, explored_paths: 43, cost: 10
 subgoal 67: tempo: 1.2472810000181198, nodi: 1091, explored_paths: 65, cost: 11
 relaxed 67: tempo: 8.876443899993319, nodi: 2761, explored_paths: 149, cost: 8
@@ -215,6 +227,7 @@ manhattan 75: tempo: 0.012394799996400252, nodi: 86, explored_paths: 4, cost: 4
 subgoal 75: tempo: 0.010396099998615682, nodi: 86, explored_paths: 4, cost: 4
 relaxed 75: tempo: 0.011817599995993078, nodi: 86, explored_paths: 4, cost: 4
 manhattan 76: tempo: 0.6996868000132963, nodi: 806, explored_paths: 47, cost: 9
+subgoal 76: tempo: 600.1336392999801, nodi: 32171, explored_paths: 1973, cost: 0
 relaxed 76: tempo: 347.0824561000045, nodi: 23306, explored_paths: 1402, cost: 9
 manhattan 77: tempo: 0.13022469999850728, nodi: 336, explored_paths: 18, cost: 7
 subgoal 77: tempo: 8.306298300012713, nodi: 2891, explored_paths: 183, cost: 14
@@ -253,8 +266,10 @@ manhattan 88: tempo: 1.99533859998337, nodi: 1341, explored_paths: 73, cost: 11
 subgoal 88: tempo: 1.6583077000104822, nodi: 1221, explored_paths: 56, cost: 11
 relaxed 88: tempo: 0.35200859999167733, nodi: 546, explored_paths: 23, cost: 7
 manhattan 89: tempo: 0.19643109999014996, nodi: 401, explored_paths: 20, cost: 8
+subgoal 89: tempo: 600.2340824999847, nodi: 29471, explored_paths: 1648, cost: 0
 relaxed 89: tempo: 3.0496512000099756, nodi: 1601, explored_paths: 69, cost: 8
 manhattan 90: tempo: 0.40824059999431483, nodi: 586, explored_paths: 24, cost: 7
+subgoal 90: tempo: 600.5842015999951, nodi: 28121, explored_paths: 1588, cost: 0
 relaxed 90: tempo: 502.1154198999866, nodi: 23106, explored_paths: 1335, cost: 8
 manhattan 91: tempo: 0.04441850000876002, nodi: 181, explored_paths: 8, cost: 7
 subgoal 91: tempo: 6.209330999990925, nodi: 2456, explored_paths: 132, cost: 10
@@ -275,6 +290,7 @@ manhattan 96: tempo: 2.433353900007205, nodi: 1431, explored_paths: 71, cost: 7
 subgoal 96: tempo: 4.24598330000299, nodi: 1941, explored_paths: 98, cost: 16
 relaxed 96: tempo: 0.10787010000785813, nodi: 291, explored_paths: 13, cost: 7
 manhattan 97: tempo: 0.11535219999495894, nodi: 321, explored_paths: 17, cost: 6
+subgoal 97: tempo: 600.084600000002, nodi: 29511, explored_paths: 1662, cost: 0
 relaxed 97: tempo: 0.7423970999952871, nodi: 771, explored_paths: 34, cost: 7
 manhattan 98: tempo: 0.9136160000052769, nodi: 906, explored_paths: 44, cost: 8
 subgoal 98: tempo: 3.661679799988633, nodi: 2001, explored_paths: 118, cost: 14
@@ -293,6 +309,7 @@ subgoal 102: tempo: 0.22074220000649802, nodi: 441, explored_paths: 22, cost: 11
 relaxed 102: tempo: 1.34174350000103, nodi: 1086, explored_paths: 55, cost: 6
 manhattan 103: tempo: 0.94165249998332, nodi: 936, explored_paths: 50, cost: 10
 subgoal 103: tempo: 1.4661141999822576, nodi: 1151, explored_paths: 57, cost: 10
+relaxed 103: tempo: 600.4854939999932, nodi: 27176, explored_paths: 1539, cost: 0
 manhattan 104: tempo: 0.08539920000475831, nodi: 241, explored_paths: 13, cost: 6
 subgoal 104: tempo: 1.1738365000055637, nodi: 991, explored_paths: 44, cost: 10
 relaxed 104: tempo: 10.262963899993338, nodi: 2936, explored_paths: 133, cost: 6
@@ -306,6 +323,7 @@ manhattan 107: tempo: 0.7019150999840349, nodi: 741, explored_paths: 43, cost: 9
 subgoal 107: tempo: 0.6060758999956306, nodi: 716, explored_paths: 39, cost: 7
 relaxed 107: tempo: 77.37088149998453, nodi: 9001, explored_paths: 460, cost: 7
 manhattan 108: tempo: 0.14084410000941716, nodi: 336, explored_paths: 16, cost: 6
+subgoal 108: tempo: 600.5773232000065, nodi: 29391, explored_paths: 1712, cost: 0
 relaxed 108: tempo: 0.13687899999786168, nodi: 346, explored_paths: 16, cost: 6
 manhattan 109: tempo: 2.751320199982729, nodi: 1601, explored_paths: 78, cost: 10
 subgoal 109: tempo: 3.186372099997243, nodi: 1861, explored_paths: 95, cost: 11
@@ -347,6 +365,7 @@ manhattan 121: tempo: 3.188395200006198, nodi: 1611, explored_paths: 79, cost: 9
 subgoal 121: tempo: 11.909613499999978, nodi: 3616, explored_paths: 188, cost: 12
 relaxed 121: tempo: 198.87846840001293, nodi: 14161, explored_paths: 707, cost: 8
 manhattan 122: tempo: 0.3506381000042893, nodi: 536, explored_paths: 26, cost: 6
+subgoal 122: tempo: 600.3276207999734, nodi: 30751, explored_paths: 1731, cost: 0
 relaxed 122: tempo: 17.169525100005558, nodi: 4301, explored_paths: 225, cost: 7
 manhattan 123: tempo: 0.05496589999529533, nodi: 196, explored_paths: 9, cost: 6
 subgoal 123: tempo: 1.2181864000158384, nodi: 1011, explored_paths: 46, cost: 13
@@ -364,6 +383,7 @@ manhattan 127: tempo: 4.231502400012687, nodi: 1966, explored_paths: 104, cost: 
 subgoal 127: tempo: 0.03411129998858087, nodi: 156, explored_paths: 6, cost: 6
 relaxed 127: tempo: 0.8080816000001505, nodi: 756, explored_paths: 30, cost: 6
 manhattan 128: tempo: 27.632791400013957, nodi: 5251, explored_paths: 277, cost: 9
+subgoal 128: tempo: 600.2487475999806, nodi: 28346, explored_paths: 1591, cost: 0
 relaxed 128: tempo: 271.0531302000163, nodi: 17766, explored_paths: 1035, cost: 9
 manhattan 129: tempo: 0.11566239999956451, nodi: 266, explored_paths: 12, cost: 8
 subgoal 129: tempo: 0.13606490002712235, nodi: 336, explored_paths: 13, cost: 9
@@ -381,6 +401,7 @@ manhattan 133: tempo: 0.07455200000549667, nodi: 236, explored_paths: 11, cost: 
 subgoal 133: tempo: 7.192178799974499, nodi: 2701, explored_paths: 138, cost: 12
 relaxed 133: tempo: 0.0896890000149142, nodi: 266, explored_paths: 14, cost: 7
 manhattan 134: tempo: 0.09271580001222901, nodi: 266, explored_paths: 11, cost: 6
+subgoal 134: tempo: 600.3509387999948, nodi: 28491, explored_paths: 1609, cost: 0
 relaxed 134: tempo: 2.1796402000181843, nodi: 1386, explored_paths: 72, cost: 6
 manhattan 135: tempo: 0.4268154999881517, nodi: 616, explored_paths: 29, cost: 8
 subgoal 135: tempo: 37.38363009999739, nodi: 6351, explored_paths: 300, cost: 11
@@ -401,6 +422,7 @@ manhattan 140: tempo: 8.065981299994746, nodi: 2736, explored_paths: 127, cost: 
 subgoal 140: tempo: 0.10116249998100102, nodi: 291, explored_paths: 19, cost: 8
 relaxed 140: tempo: 0.11650429997825995, nodi: 311, explored_paths: 20, cost: 8
 manhattan 141: tempo: 1.7559970000002068, nodi: 1181, explored_paths: 55, cost: 7
+subgoal 141: tempo: 600.4395159000123, nodi: 28816, explored_paths: 1620, cost: 0
 relaxed 141: tempo: 0.02825150001444854, nodi: 151, explored_paths: 8, cost: 6
 manhattan 142: tempo: 0.6090621000039391, nodi: 766, explored_paths: 42, cost: 11
 subgoal 142: tempo: 11.16216209999402, nodi: 3616, explored_paths: 223, cost: 10
@@ -433,6 +455,7 @@ manhattan 151: tempo: 0.41719449998345226, nodi: 581, explored_paths: 28, cost: 
 subgoal 151: tempo: 132.04380039998796, nodi: 12861, explored_paths: 788, cost: 17
 relaxed 151: tempo: 289.4769868000003, nodi: 20276, explored_paths: 1157, cost: 8
 manhattan 152: tempo: 0.09564149999641813, nodi: 281, explored_paths: 16, cost: 6
+subgoal 152: tempo: 600.1860388000205, nodi: 28366, explored_paths: 1604, cost: 0
 relaxed 152: tempo: 6.2239008999895304, nodi: 2421, explored_paths: 132, cost: 6
 manhattan 153: tempo: 0.13785999998799525, nodi: 346, explored_paths: 17, cost: 7
 subgoal 153: tempo: 1.8221268999914173, nodi: 1276, explored_paths: 57, cost: 8
@@ -444,6 +467,7 @@ manhattan 155: tempo: 0.20106969997868873, nodi: 406, explored_paths: 24, cost: 
 subgoal 155: tempo: 59.6282839999767, nodi: 8076, explored_paths: 421, cost: 12
 relaxed 155: tempo: 1.3696212000213563, nodi: 1091, explored_paths: 56, cost: 7
 manhattan 156: tempo: 0.5907575000019278, nodi: 711, explored_paths: 32, cost: 8
+subgoal 156: tempo: 600.0574961000239, nodi: 29096, explored_paths: 1631, cost: 0
 relaxed 156: tempo: 13.985909599985462, nodi: 3641, explored_paths: 177, cost: 7
 manhattan 157: tempo: 0.010727499990025535, nodi: 86, explored_paths: 4, cost: 4
 subgoal 157: tempo: 0.03520009998464957, nodi: 161, explored_paths: 7, cost: 4
@@ -452,6 +476,7 @@ manhattan 158: tempo: 0.05405780000728555, nodi: 206, explored_paths: 12, cost: 
 subgoal 158: tempo: 44.14189540001098, nodi: 6526, explored_paths: 338, cost: 17
 relaxed 158: tempo: 223.94241610000608, nodi: 13886, explored_paths: 697, cost: 9
 manhattan 159: tempo: 0.12822240000241436, nodi: 311, explored_paths: 14, cost: 6
+subgoal 159: tempo: 600.1731734999921, nodi: 29041, explored_paths: 1632, cost: 0
 relaxed 159: tempo: 1.9625581000000238, nodi: 1241, explored_paths: 58, cost: 6
 manhattan 160: tempo: 0.0625438999850303, nodi: 201, explored_paths: 10, cost: 7
 subgoal 160: tempo: 0.07091180002316833, nodi: 221, explored_paths: 10, cost: 8
@@ -494,6 +519,7 @@ subgoal 172: tempo: 1.213552900007926, nodi: 1046, explored_paths: 47, cost: 11
 relaxed 172: tempo: 14.189231900003506, nodi: 3451, explored_paths: 155, cost: 7
 manhattan 173: tempo: 0.9543605000071693, nodi: 901, explored_paths: 51, cost: 9
 subgoal 173: tempo: 12.893912200001068, nodi: 3701, explored_paths: 235, cost: 20
+relaxed 173: tempo: 600.3836049000092, nodi: 26336, explored_paths: 1662, cost: 0
 manhattan 174: tempo: 2.8222368999850005, nodi: 1576, explored_paths: 83, cost: 9
 subgoal 174: tempo: 14.911818900000071, nodi: 3711, explored_paths: 174, cost: 12
 relaxed 174: tempo: 5.219036700000288, nodi: 2046, explored_paths: 91, cost: 8
@@ -528,6 +554,7 @@ manhattan 184: tempo: 0.5836351999896578, nodi: 691, explored_paths: 34, cost: 8
 subgoal 184: tempo: 14.456630700005917, nodi: 4261, explored_paths: 225, cost: 10
 relaxed 184: tempo: 95.14118939999025, nodi: 9511, explored_paths: 484, cost: 8
 manhattan 185: tempo: 0.1395933000021614, nodi: 331, explored_paths: 14, cost: 6
+subgoal 185: tempo: 600.1766566000006, nodi: 28946, explored_paths: 1636, cost: 0
 relaxed 185: tempo: 54.62421780001023, nodi: 7376, explored_paths: 362, cost: 6
 manhattan 186: tempo: 0.10867650000727735, nodi: 306, explored_paths: 16, cost: 9
 subgoal 186: tempo: 6.275407400011318, nodi: 2351, explored_paths: 114, cost: 8
@@ -566,6 +593,7 @@ manhattan 197: tempo: 0.3379385999869555, nodi: 526, explored_paths: 22, cost: 5
 subgoal 197: tempo: 1.161276099999668, nodi: 996, explored_paths: 46, cost: 12
 relaxed 197: tempo: 0.26637669999036007, nodi: 446, explored_paths: 18, cost: 5
 manhattan 198: tempo: 0.02120040002046153, nodi: 121, explored_paths: 6, cost: 5
+subgoal 198: tempo: 600.1459115000034, nodi: 29576, explored_paths: 1666, cost: 0
 relaxed 198: tempo: 1.5756233999854885, nodi: 1156, explored_paths: 51, cost: 5
 manhattan 199: tempo: 0.040023399982601404, nodi: 171, explored_paths: 8, cost: 5
 subgoal 199: tempo: 0.3567226000013761, nodi: 556, explored_paths: 29, cost: 6
