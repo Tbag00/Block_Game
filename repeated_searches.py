@@ -43,7 +43,7 @@ def data(grandezza: int, euristica:str):
             elif euristica=="A-Star euristica relaxed pesata":
                 solution = execute3(euristica, astar_search, problema, problema.posti_sbagliati_piu_giusti_sopra)
             elif euristica=="A-Star euristica relaxed":
-                solution = execute3(str, astar_search, problema, problema.posti_sbagliati)
+                solution = execute3(euristica, astar_search, problema, problema.posti_sbagliati)
             else:
                 print("errore")
                 return
@@ -56,14 +56,9 @@ def data(grandezza: int, euristica:str):
 #     data(i, "A-Star euristica relaxed pesata")
 #     data(i, "A-Star euristica veloce")
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 #decommenta se si vuole testare su stessa matrice
 for i in range(2, 7):
     data_same_matrix(i, 200)
-=======
->>>>>>> c940a4a1a4c69d9f857f103c3544fc95869cc3a6
 #data(6, "A-Star euristica veloce")
 data(6, "A-Star euristica relaxed pesata")
 data(6, "A-Star euristica relaxed")
@@ -71,4 +66,3 @@ data(6, "A-Star euristica relaxed")
 # decommenta se si vuole testare su stessa matrice
 # for i in range(2, 7):
 #     data_same_matrix(i, 200)
->>>>>>> 8161ab1876f5cf2663435e986ddd61712f9ed8f2
