@@ -32,7 +32,7 @@ def plot_data(data):
     for metric in metrics:
         plt.figure(figsize=(10, 6))
         for category, values in data.items():
-            indices = np.array(values["indices"]) #+ offsets[category]  # Aggiunta di offset per differenziare linee sovrapposte
+            indices = np.array(values["indices"]) + offsets[category]  # Aggiunta di offset per differenziare linee sovrapposte
             plt.plot(indices, values[metric],'.', label=category, color=colors[category])
             #plt.xscale('symlog', linthresh=6)
             #plt.yscale('symlog', linthresh=1)
