@@ -98,6 +98,7 @@ def best_first_graph_search1(problem, f, display=False):
     There is a subtlety: the line "f = memoize(f, 'f')" means that the f
     values will be cached on the nodes as they are computed. So after doing
     a best first search you can examine the f values of the path returned."""
+    tini = time.perf_counter()
     f = memoize(f, 'f')
     node = Node(problem.initial)
     frontier = PriorityQueue('min', f)
@@ -119,6 +120,10 @@ def best_first_graph_search1(problem, f, display=False):
                 if f(child) < frontier[child]:
                     del frontier[child]
                     frontier.append(child)
+        tmp = time.perf_counter() - tini
+        if tmp > 600:
+            print("EVVOVE", tmp)
+            break
     return Result(None, counter, len(explored), 0)
 
 
@@ -159,15 +164,15 @@ def execute3(name: str, algorithm: Callable, problem: Problem, *args, **kwargs) 
     print(f"{RED}{name}{RESET}\n")
     d = {"tempo": 0, "nodi": 0, "explored_paths": 0, "cost": 0}
 
-    start = time.time()
+    start = time.perf_counter()
     sol = algorithm(problem, *args, **kwargs)
-    end = time.time()
+    end = time.perf_counter()
     d["tempo"] = end - start
 
     nodi_g = 0
     cammini = 0
     if problem.goal is not None:
-        print(f"\n{GREEN}PROBLEM:{RESET} {problem.initial} -> {problem.goal}")
+        print(f"\n{GREEN}PROBLEM:\n{RESET} {problem.initial.m_corrente}\n    |\n    V\n {problem.goal}")
     if isinstance(sol, Result):
         nodi_g = sol.nodes_generated
         print(nodi_g)
@@ -179,11 +184,11 @@ def execute3(name: str, algorithm: Callable, problem: Problem, *args, **kwargs) 
         sol = sol.result
         d["nodi"] = nodi_g
         d["explored_paths"] = cammini
-    #print(f"{GREEN}Result:{RESET} {sol.solution() if sol is not None else '---'}")
+        print(f"{GREEN}Time:{RESET} {end - start} s")
+    print(f"{GREEN}Result:{RESET} {sol.solution() if sol is not None else '---'}")
     if isinstance(sol, Node):
         print(f"{GREEN}Path Cost:{RESET} {sol.path_cost}")
         print(f"{GREEN}Path Length:{RESET} {sol.depth}")
-        print(f"{GREEN}Time:{RESET} {end - start} s")
         d["cost"] = sol.path_cost
 
     return d
@@ -271,6 +276,7 @@ class Mproblem(Problem):
         goal = problem.goal
         goal_positions = {goal[r, c]: (r, c) for r in range(goal.shape[0]) for c in range(goal.shape[1])}
         errore = 0
+        lista_col_goal = []
 
         for c in range(0, cols):
             for r in range(rows - 1, -1, -1):
@@ -284,18 +290,21 @@ class Mproblem(Problem):
 
                     #calcoliamo il costo della soluzione
                     gr, gc = goal_positions[corrente[r, c]]
-                    if gc == c: # sono nella stessa colonna
-                        if (gr > r): #la soluzione si troverebbe sotto alla riga
-                            errore += gr - r + 1# quindi il costo
-                        else:
-                            errore += r - gr + 1
-                    else:
-                        for r_sopra in range(gr, -1, -1):  # controlliamo sopra
-                            if corrente[r_sopra][gc] != 0:
-                                errore += 1
+                    if gc not in lista_col_goal:
+                        #print(lista_col_goal)
+                        lista_col_goal.append(gc)
+                        if gc == c: # sono nella stessa colonna
+                            if (gr > r): #la soluzione si troverebbe sotto alla riga
+                                errore += gr - r + 1# quindi il costo
                             else:
-                                break
-                    break
+                                errore += r - gr + 1
+                        else:
+                            for r_sopra in range(gr, -1, -1):  # controlliamo sopra
+                                if corrente[r_sopra][gc] != 0:
+                                    errore += 1
+                                else:
+                                    break
+                        break
         return errore
 
 
