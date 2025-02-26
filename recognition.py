@@ -68,6 +68,8 @@ model.compile(
     metrics=['accuracy']
 )
 
+visualkeras.layered_view(model, legend_text_spacing_offset=0, to_file='output.png')
+exit(0)
 # Fermo il training quando il validation loss raggiunge una soglia accettabile
 early_stopping = callbacks.EarlyStopping(monitor='val_loss', min_delta=0.1, patience=5, verbose=1, mode='min')
 

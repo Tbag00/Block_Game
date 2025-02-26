@@ -16,7 +16,7 @@ from PIL import Image, ImageTk
 def upload_image(is_iniziale: bool):
     file_path = filedialog.askopenfilename(
         title="Seleziona un'immagine", 
-        filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.bmp;*.tiff"), ("All Files", "*.*")]
+        filetypes=[("All Files", "*.*")]
     )
     
     if file_path:
