@@ -10,6 +10,10 @@ import visualkeras
 from contextlib import redirect_stdout
 import cv2 as cv
 from sklearn.metrics import accuracy_score
+import pandas  as pd
+import seaborn as sn
+from sklearn.metrics import confusion_matrix
+
 
 #from tensorflow.keras.callbacks import EarlyStopping
 
@@ -27,9 +31,7 @@ filtro_train = (train_labels>0) & (train_labels <7)
 filtro_test = (test_labels>0) & (test_labels <7)
 
 plt.imshow(train_images[0])
-plt.savefig("test_plot")
 
-exit(0)
 train_images = train_images[filtro_train]
 train_labels = train_labels[filtro_train] - 1
 test_images = test_images[filtro_test]
@@ -100,3 +102,17 @@ plt.legend(loc='upper right')
 plt.tight_layout()
 plt.savefig("Accuracy_Loss_CNN2")
 plt.show()
+
+
+labels = [1, 2, 3, 4, 5, 6]
+y_pred = model.predict(test_images)
+matrix = confusion_matrix(test_labels, y_pred.argmax(axis=1))+1
+df_cm = pd.DataFrame(matrix, labels, labels)
+plt.figure(figsize = (10,7))
+sn.set_theme(font_scale=1.4) #for label size
+sn.heatmap(df_cm, cmap="BuPu",annot=True, annot_kws={"size": 10}) #font size
+plt.xlabel('Predicted Class')
+plt.ylabel('Actual Class')
+plt.title('Confusion Matrix')
+plt.show()
+plt.savefig("confusion_matrix")
