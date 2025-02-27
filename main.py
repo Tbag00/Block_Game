@@ -88,7 +88,8 @@ def confirm_images(verbose: bool):
     solution_window.title("Scegli l' euristica")
 
     button1 = tk.Button(solution_window, text="A-Star euristica veloce", command=lambda: solution(matrice_iniziale, matrice_finale, problemazione, "A-Star euristica veloce"))
-    button2 = tk.Button(solution_window, text="A-Star euristica relaxed pesata", command=lambda: solution(matrice_iniziale, matrice_finale, problemazione, "A-Star euristica relaxed pesata"))
+    # button2 = tk.Button(solution_window, text="A-Star euristica relaxed pesata", command=lambda: solution(matrice_iniziale, matrice_finale, problemazione, "A-Star euristica relaxed pesata"))
+    button2 = tk.Button(solution_window, text="A-Star euristica subgoal", command=lambda: solution(matrice_iniziale, matrice_finale, problemazione, "A-Star euristica subgoal"))
     button3 = tk.Button(solution_window, text="A-Star euristica relaxed", command=lambda: solution(matrice_iniziale, matrice_finale, problemazione, "A-Star euristica relaxed"))
 
     button1.pack(pady=10)
@@ -101,6 +102,8 @@ def solution(matrice_iniziale:np.array, matrice_finale:np.array, problema: Mprob
         soluzione  = execute("A-Star euristica veloce", astar_search, problema, problema.posti_sbagliati_piu_giusti_sopra_piu_costo_sol)
     elif nome == "A-Star euristica relaxed pesata":
         soluzione  = execute("A-Star euristica relaxed pesata", astar_search, problema, problema.posti_sbagliati_piu_giusti_sopra)
+    elif nome == "A-star euristica subgoal":
+        soluzione  = execute("A-Star euristica subgoal", astar_search, problema, problema.subgoal_problem)
     elif nome == "A-Star euristica relaxed":
         soluzione  = execute("A-Star euristica relaxed", astar_search, problema, problema.posti_sbagliati)
     else:

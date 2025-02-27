@@ -102,12 +102,12 @@ def getStato(original_img: cv.Mat, verbose: bool) -> np.array:
             inner_recs.append(rectExt)
 
     for rect in inner_recs:
-        rect_img = original_img[rect["y"] + 5 :rect["y"] + rect["h"] - 5, rect["x"] + 5 :rect["x"] + rect["w"] - 5]
+        rect_img = original_img[rect["y"] + 12 :rect["y"] + rect["h"] - 12, rect["x"] + 12 :rect["x"] + rect["w"] - 12]
         if verbose:
             cv.imshow("number inside box",rect_img)
             cv.waitKey(0)
 
-        rect["value"] = recon_number(rect_img)
+        rect["value"] = recon_number(rect_img, verbose)
         print(rect["value"])
     print("ho rilevato %s blocchi" %len(inner_recs))
     cv.destroyAllWindows()
@@ -125,7 +125,7 @@ def inside(rectExt: dict, rectInt: dict) -> bool:
 
 # Input: immagine contenente solo numero
 # Output: etichetta
-def recon_number(rect: cv.Mat) -> int:
+def recon_number(rect: cv.Mat, verbose: bool) -> int:
     # adatto input size
     rect = cv.bitwise_not(rect)
     rect = cv.resize(rect, (28, 28))
@@ -134,11 +134,12 @@ def recon_number(rect: cv.Mat) -> int:
     #     rect, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX)
     (thresh1, rect) = cv.threshold(rect, 127, 255, cv.THRESH_TOZERO)
     
-    # plt.imshow(rect)
-    # plt.show()
+    if verbose:
+        cv.imshow("immagine che riconosce", rect)
+        cv.waitKey(0)
     rect = rect/255
 
-    print(rect)
+    #print(rect)
     predictions = model.predict(np.array([rect])) 
     return predictions.argmax(axis=1) + 1
 
