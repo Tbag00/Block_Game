@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from puppolo import anima_matrice
 
 
-"""HA SEGNATO L'INTER"""
+
 BLUE = "\033[34;1m"
 RED = "\033[31;1m"
 GREEN = "\033[32;1m"
@@ -41,11 +41,8 @@ def generate_matrix(num_elements:int):
 
     return apply_gravity(matrix)
 
-matrix_i = generate_matrix(6)
-matrix_f = generate_matrix(6)
 
-'''print(matrix_i)  #16 a 9
-print(matrix_f)'''
+
 
 
 def prova(state: np.ndarray) -> list[tuple[int, int]]:
@@ -63,25 +60,6 @@ def prova(state: np.ndarray) -> list[tuple[int, int]]:
     return azioni_possibili
 
 
-'''
-
-pisello = prova(matrix_i)
-print(pisello)
-
-def nata_prova(state:np.ndarray)->None:
-    righe_p = 0 #righe di partenza 
-    righe_a = state.shape[0]-1 #righe di arrivo per le colonne di arrivo
-    while state[righe_p][pisello[0][0]] == 0:
-        righe_p += 1
-    while state[righe_a][pisello[1][0]] != 0:
-        righe_a -= 1
-    state[righe_a][pisello[1][0]] = state[righe_p][pisello[0][0]]
-    state[righe_p][pisello[0][0]] = 0
-    return state
-matrix_i = nata_prova(matrix_i)
-print(matrix_i)
-'''
-
 
 @dataclass  #decoratore
 class Result:
@@ -91,13 +69,6 @@ class Result:
     nodes_left_in_frontier: int
 
 def best_first_graph_search1(problem, f, display=False):
-    """Search the nodes with the lowest f scores first.
-    You specify the function f(node) that you want to minimize; for example,
-    if f is a heuristic estimate to the goal, then we have greedy best
-    first search; if f is node.depth then we have breadth-first search.
-    There is a subtlety: the line "f = memoize(f, 'f')" means that the f
-    values will be cached on the nodes as they are computed. So after doing
-    a best first search you can examine the f values of the path returned."""
     tini = time.perf_counter()
     f = memoize(f, 'f')
     node = Node(problem.initial)
@@ -128,16 +99,9 @@ def best_first_graph_search1(problem, f, display=False):
 
 
 def astar_search(problem, h=None, display=False)-> Result:
-    """A* search is best-first graph search with f(n) = g(n)+h(n).
-    You need to specify the h function when you call astar_search, or
-    else in your Problem subclass."""
     h = memoize(h or problem.h, 'h')
 
     return best_first_graph_search1(problem, lambda n: n.path_cost + h(n), display)
-
-'''def astar_search(problem: Problem, h: Callable | None = None) -> Result:
-  h = memoize(h or problem.h, 'h')
-  return best_first_graph_search(problem, lambda node : h(node) + node.path_cost)'''
 
 
 def execute(name: str, algorithm: Callable, problem: Problem, *args, **kwargs):
@@ -239,19 +203,17 @@ class Mproblem(Problem):
         while new_matrice[righe_a][action[1]] != 0:
             righe_a -= 1
         if righe_a >= 0:
-            new_matrice[righe_a][action[1]] = new_matrice[righe_p][action[
-                0]]  #modificare gli indici di action se da problemi perchè potrebbe volere un numero al posto di una tupla vedi sopra
+            new_matrice[righe_a][action[1]] = new_matrice[righe_p][action[0]]  #modificare gli indici di action se da problemi perchè potrebbe volere un numero al posto di una tupla vedi sopra
             new_matrice[righe_p][action[0]] = 0
         return Matrice(new_matrice)
 
     def goal_test(self, state: Matrice) -> bool:
         return np.array_equal(state.m_corrente, self.goal)
 
-    def posti_sbagliati(problem, node) -> int: #ammissibile ma poco rappresentativa
-        # l'euristica conta i blocchi nella posizione sbagliata
-        return np.sum(node.state.m_corrente != problem.goal)
+    def relaxed(problem, node) -> int: 
+        return np.sum((node.state.m_corrente != 0) & (node.state.m_corrente != problem.goal))
 
-    def posti_sbagliati_piu_giusti_sopra(problem, node) -> int: #ammissibile e meglio della relax, non buona in tempo
+    def posti(problem, node) -> int: #meglio della relax, non buona in tempo
         # l'euristica conta i blocchi sbagliati più i blocchi sopra, a prescindere che siano giusti o sbagliati
         corrente = node.state.m_corrente
         rows, cols = corrente.shape
@@ -269,6 +231,30 @@ class Mproblem(Problem):
                             break
                     break
         return errore
+    
+    def weighted_relax(problem, node) -> int:  
+        stato_corrente = node.state.m_corrente
+        rows, cols = stato_corrente.shape
+        goal = problem.goal
+
+        errore_totale = 0
+
+        for r in range(rows - 1, -1, -1):  # Dal basso verso l'alto
+            for c in range(0, cols):
+                valore = node.state.m_corrente[r, c]
+                goal_valore = goal[r, c]
+                if valore != goal_valore:  # se il valore è sbagliato il numero di azioni per metterlo al posto giusto
+                    # dipenderà dai blocchi sopra
+                    errore_totale += r  # i pesi vengono assegnati in base alla riga, si suggerisce che più si è in alto
+                    # più si è 'accessibili' quindi leggeri
+                    for r_sopra in range(r - 1, 0):  # controlliamo sopra
+                        if node.state.m_corrente[r_sopra][c] == goal[r, c]:
+                            errore_totale += r_sopra
+                        else:
+                            break
+                elif valore == 0:
+                    break
+        return errore_totale
 
     def posti_sbagliati_piu_giusti_sopra_piu_costo_sol(problem, node) -> int:
         corrente = node.state.m_corrente
@@ -308,37 +294,17 @@ class Mproblem(Problem):
         return errore
 
 
-    def weighted_relax(problem, node) -> int:  #:TODO non ammissibile
-        stato_corrente = node.state.m_corrente
-        rows, cols = stato_corrente.shape
-        goal = problem.goal
-
-        errore_totale = 0
-
-        for r in range(rows - 1, -1, -1):  # Dal basso verso l'alto
-            for c in range(0, cols):
-                valore = node.state.m_corrente[r, c]
-                goal_valore = goal[r, c]
-                if valore != goal_valore:  # se il valore è sbagliato il numero di azioni per metterlo al posto giusto
-                    # dipenderà dai blocchi sopra
-                    errore_totale += r  # i pesi vengono assegnati in base alla riga, si suggerisce che più si è in alto
-                    # più si è 'accessibili' quindi leggeri
-                    for r_sopra in range(r - 1, 0):  # controlliamo sopra
-                        if node.state.m_corrente[r_sopra][c] == goal[r, c]:
-                            errore_totale += r_sopra
-                        else:
-                            break
-                elif valore == 0:
-                    break
-        return errore_totale
+    
 
 
 
-    def subgoal_problem(problem, node) -> int:  #:TODO ammissibile ma da testare, sburro fortissimo
+    def subgoal_problem(problem, node) -> int:  
+        
         """
         Euristica che assegna priorità alle colonne più a sinistra.
         Penalizza gli elementi fuori posto con pesi decrescenti per colonne successive.
         """
+
         goal_matrix = problem.goal
         current_matrix = node.state.m_corrente
         rows, cols = current_matrix.shape
@@ -346,13 +312,13 @@ class Mproblem(Problem):
         for c in range(cols):
             for r in range(rows - 1, -1, -1):  # Dal basso verso l'alto
                 if current_matrix[r][c] != goal_matrix[r][c]:
-                    score += cols - c  # Penalità ponderata per colonna
+                    score += r + 1  # Penalità ponderata per colonna
                 elif current_matrix[r][c] == 0:
                     break
             if score > 0: break
 
         # il subgoal deve essere messo in funzione della relax, altrimenti diventa poco rappresentativo
-        return score*np.sum(node.state.m_corrente != problem.goal)
+        return score*np.sum((node.state.m_corrente != 0) & (node.state.m_corrente != problem.goal))
 
     def weighted_subgoal(problem, node) -> int:
         goal_matrix = problem.goal
@@ -402,7 +368,7 @@ class Mproblem(Problem):
         return score
 
 
-    def manhattan_distance(problem, node) -> int: #:TODO non ammissibile
+    def manhattan_distance(problem, node) -> int: # non ammissibile
         stato_corrente = node.state.m_corrente
         rows, cols = stato_corrente.shape
         goal = problem.goal
@@ -426,7 +392,7 @@ class Mproblem(Problem):
                     break
         return errore_totale
 
-    def euristica_drinkastica(problem, node) -> int:  #fa cacare, meglio la relaxed
+    def euristica_drinkastica(problem, node) -> int:  # meglio la relaxed
         stato_corrente = node.state.m_corrente
         goal = problem.goal
         rows, cols = stato_corrente.shape
@@ -456,58 +422,5 @@ class Mproblem(Problem):
                                 break  # Basta un errore sotto per contare il blocco come problematico
                 else:  #se troviamo uno zero si puo interrompere, tanto avra solo altri zeri sopra
                     break
-        #print(blocchi_dal_goal)
         return blocchi_dal_goal
 
-
-# matrice_inizio = np.array(
-#     [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 6, 0],
-#      [2, 5, 0, 0, 3, 4]])
-# matrice_fine = np.array([[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 6, 0, 0, 5],
-#                      [3, 2, 4, 0, 0, 1]])
-
-# # Esegui dei movimenti sulla matrice1
-# movimenti = [(1, 2), (4, 2), (1, 5), (0, 1), (4, 0), (5, 4), (5, 3), (2, 5), (4, 5), (2, 5), (3, 2), (5, 4), (5, 4),
-#              (5, 2), (4, 3), (4, 5), (3, 5)]  # Esempio di movimenti: (colonna_sorgente, colonna_destinazione)
-
-# problemazione = Mproblem(Matrice(matrix_i), matrix_f)
-# s1 = execute("A-Star euristica posti posti sbagliati + giusti da spostare", astar_search, problemazione, problemazione.posti_sbagliati_piu_giusti_sopra)
-# s2 = execute("A-Star euristica posti sbagliati + giusti da spostare + sol", astar_search, problemazione, problemazione.posti_sbagliati_piu_giusti_sopra_piu_costo_sol)
-# print(s1.path_cost, "   ", s2.path_cost)
-#execute("A-Star euristica subgoal", astar_search, problemazione, problemazione.subgoal_problem)
-#execute("A-Star euristica relax pesata", astar_search, problemazione, problemazione.weighted_relax)
-#execute("A-Star euristica manhattan", astar_search, problemazione, problemazione.manhattan_distance)
-#execute("A-Star drink ti amo", astar_search, problemazione, problemazione.euristica_drinkastica)
-
-'''stato_corrente = node.state.m_corrente
-goal = problem.goal
-
-# Creiamo una mappa delle posizioni dei valori nel goal
-goal_positions = {goal[r, c]: (r, c) for r in range(goal.shape[0]) for c in range(goal.shape[1])}
-
-distanza = 0
-for c in range(0, goal.shape[1]):
-    for r in range(goal.shape[0] - 1, -1, -1):  # Dal basso verso l'alto
-        if stato_corrente[r, c] != 0:  # Evitiamo di cercare gli 0
-            if stato_corrente[r, c] != goal[r, c]:
-                gr, gc = goal_positions[stato_corrente[r, c]]
-                for r_sopra in range(r, 0):  # controlliamo sopra
-                    if stato_corrente[r_sopra, c] != 0:  # Evitiamo di cercare gli 0
-                        distanza += 1
-                    else: break
-                for r_sopra in range(gr, 0):  # controlliamo sopra
-                    if stato_corrente[r_sopra, gc] != 0:  # Evitiamo di cercare gli 0
-                        distanza += 1
-                    else: break
-        else: break
-return distanza'''
-
-
-
-'''                    distanza += abs(gr - r) + abs(gc - c)  # Distanza di Manhattan
-                else: break
-                for r_sopra in range(r - 1, 0):  # controlliamo sopra
-                    if node.state.m_corrente[r_sopra][c] != 0:
-                        distanza += r_sopra
-                    else:
-                        break'''
