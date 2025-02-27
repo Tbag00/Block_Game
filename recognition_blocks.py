@@ -193,7 +193,7 @@ def costruisci_mat(rects: list) -> np.matrix:
         trovato = False
         for col in collezione_per_x:
             # Verifica se il rettangolo appartiene a questa colonna
-            if (rect["x"] - rect["w"]/2 <= col[0]["x"] + col[0]["w"]/2) and (rect["x"] + rect["w"]/2 >= col[0]["x"] - col[0]["w"]/2):
+            if (rect["x"] - rect["w"]/4 <= col[0]["x"] + col[0]["w"]/4) and (rect["x"] + rect["w"]/4 >= col[0]["x"] - col[0]["w"]/4):
                 col.append(rect)
                 trovato = True
                 break
